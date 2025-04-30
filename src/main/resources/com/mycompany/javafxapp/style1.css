@@ -1,0 +1,8 @@
+.ui-background {
+    /* Đường dẫn từ gốc classpath (resources) */
+    -fx-background-image: url('/background1.jpeg');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    
+}
