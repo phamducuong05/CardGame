@@ -37,15 +37,12 @@ public abstract class Deck<T extends Card, P extends Player<T>> {
     }
 
     public void dealCards(List<P> players, int handSize) {
-        // ...
+        if (players.size() * handSize > deck.size()) {
+            throw new IllegalArgumentException("Not enough cards in deck");
+        }
+
         for (int i = 0; i < players.size() * handSize; i++) {
-            T card = deck.pop(); // Hoặc drawCard()
-            if (card != null) { // <<--- KIỂM TRA TRƯỚC KHI THÊM
-                players.get(i % players.size()).receiveCard(card); // Đảm bảo i % players.size()
-            } else {
-                System.err.println("Deck ran out of cards while dealing.");
-                break; // Hoặc xử lý khác
-            }
+            players.get(i % 4).receiveCard(deck.pop());
         }
     }
 
