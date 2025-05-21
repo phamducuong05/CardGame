@@ -33,19 +33,19 @@ public class TienLenGameState {
         this.isGameOver = isGameOver;
         this.playerRankings = playerRankings;
     }
-    
+
     /**
      * Get the list of players
-     * 
+     *
      * @return The list of players
      */
     public List<TienLenPlayer> getPlayers() {
         return players;
     }
-    
+
     /**
      * Get the current player
-     * 
+     *
      * @return The current player
      */
     public TienLenPlayer getCurrentPlayer() {
@@ -66,11 +66,6 @@ public class TienLenGameState {
      */
     public List<WestCard> getCardsOnTable() {
         return cardsOnTable;
-    }
-
-    public List<WestCard> getLastPlayedCards() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getLastPlayedCards'");
     }
 
 }

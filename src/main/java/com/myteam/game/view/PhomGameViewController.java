@@ -19,40 +19,40 @@ public class PhomGameViewController implements PhomViewController {
 
     // First, we need to initialize components of javafx such as stage, scene, root and Hbox of player.
     // We need to write the handle button of 6 buttons including Deal button, play button, eat button, draw, send.
-    
+
     private PhomLogicController logicController;
     private List<WestCard> selectedCards = new ArrayList<>();
-    
+
     /**
      * Constructor
      */
     public PhomGameViewController() {
         System.out.println("PhomGameViewController created - JavaFX would be initialized here");
     }
-    
+
     @Override
     public void setLogicController(PhomLogicController logicController) {
         this.logicController = logicController;
         System.out.println("LogicController set");
     }
-    
+
     @Override
     public void updateView(PhomGameState gameState) {
         System.out.println("Updating view with game state");
         // In a real implementation, would update UI elements
     }
-    
+
     @Override
     public void onGameStarted(PhomGameState gameState) {
         System.out.println("Game started");
         updateView(gameState);
     }
-    
+
     @Override
     public void onGamePaused() {
         System.out.println("Game paused");
     }
-    
+
     @Override
     public void onGameResumed() {
         System.out.println("Game resumed");
@@ -60,19 +60,19 @@ public class PhomGameViewController implements PhomViewController {
             updateView(logicController.getGameLogic().getCurrentGameState());
         }
     }
-    
+
     @Override
     public void onGameEnded(PhomGameState gameState, PhomPlayer winner) {
         System.out.println("Game ended. Winner: " + winner.getName());
         updateView(gameState);
     }
-    
+
     @Override
     public void promptPlayerForAction(PhomPlayer player, PhomGameState gameState) {
         System.out.println("Prompting player " + player.getName() + " for action");
         // In a real implementation, would enable appropriate UI controls
     }
-    
+
     @Override
     public void promptPlayerToDiscard(PhomPlayer player, PhomGameState gameState) {
         System.out.println("Prompting player " + player.getName() + " to discard a card");
@@ -96,15 +96,15 @@ public class PhomGameViewController implements PhomViewController {
         // Bên cạnh việc này thì ta cũng sẽ cho bài di chuyển lên xuống khi ấn click nữa.
         // Phần code bên trên chỉ là minh họa còn cách implement
         // chi tiết giống hàm handleCardClick() của lom dom
-        
+
     }
 
-    
+
     // Handle deal button click
     public void handleDealButtonClick() {
         logicController.handleDeal();
     }
-    
+
     /**
      * Handle draw button click
      */
@@ -115,18 +115,13 @@ public class PhomGameViewController implements PhomViewController {
             System.out.println("Player " + currentPlayer.getName() + " draws a card");
         }
     }
-    
-    
-    
-    /**
-     * Handle eat button click
-     */
+
+
     public void handleEatButtonClick() {
         if (logicController != null) {
             PhomPlayer currentPlayer = logicController.getCurrentPlayer();
             PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
             WestCard topCard = gameState.getCardOnTable();
-            
             if (topCard != null) {
                 logicController.playerRequestsEat(currentPlayer, topCard);
             } else {
@@ -145,10 +140,14 @@ public class PhomGameViewController implements PhomViewController {
         }
     }
 
+    public void handleSendCardClick() {
+
+    }
+
 
     public List<WestCard> getSelectedCards() {
         return selectedCards;
     }
-    
+
 
 } 

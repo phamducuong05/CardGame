@@ -139,9 +139,9 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         selectedCards.sort(Comparator.comparing(WestCard::getRank).thenComparing(WestCard::getSuit));
 
         //special counter only for cards with rank 2
-        if (cardsOnTable.size() == 1 && cardsOnTable.getLast().getRank() == Rank.TWO) {
+        if (cardsOnTable.size() == 1 && cardsOnTable.getFirst().getRank() == Rank.TWO) {
             if (selectedCards.size() == 1 && selectedCards.getFirst().getRank() == Rank.TWO
-            && selectedCards.getFirst().getSuit().compareTo(cardsOnTable.getFirst().getSuit()) > 0) {
+                    && selectedCards.getFirst().getSuit().compareTo(cardsOnTable.getFirst().getSuit()) > 0) {
                 return true;
             }
 

@@ -22,12 +22,12 @@ public class PhomGameState {
         this.winner = winner;
         this.cardOnTable = cardOnTable;
     }
-    
+
 
     public List<PhomPlayer> getPlayers() {
         return players;
     }
-    
+
 
     public PhomPlayer getCurrentPlayer() {
         return currentPlayer;
@@ -37,12 +37,12 @@ public class PhomGameState {
     public List<List<WestCard>> getAllPlayerMelds() {
         return allPlayerMelds;
     }
-    
+
 
     public boolean isGameOver() {
         return isGameOver;
     }
-    
+
 
     public PhomPlayer getWinner() {
         return winner;

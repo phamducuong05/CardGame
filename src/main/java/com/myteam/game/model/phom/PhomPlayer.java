@@ -11,8 +11,7 @@ public abstract class PhomPlayer extends Player<WestCard> {
     private List<List<WestCard>> allPhoms;
     private int numOfTurn;
 
-    public PhomPlayer() {
-    }
+    public PhomPlayer() {}
 
     public PhomPlayer(String name) {
         super(name);
@@ -43,9 +42,10 @@ public abstract class PhomPlayer extends Player<WestCard> {
     }
 
     public void addDiscardCards(WestCard card) {
-        if (card != null)
+        if(card != null)
             this.discardCards.add(card);
     }
+
 
     public List<List<WestCard>> findCombinations() {
         List<List<WestCard>> allPhoms = new ArrayList<>();
@@ -56,15 +56,13 @@ public abstract class PhomPlayer extends Player<WestCard> {
         Map<Rank, List<WestCard>> rankMap = new HashMap<>();
         for (Rank rank : Rank.values()) {
             for (WestCard card : this.getHand()) {
-                if (card != null && rank == card.getRank()) {
-                    if (rank == card.getRank()) {
-                        if (rankMap.containsKey(rank)) {
-                            rankMap.get(rank).add(card);
-                        } else {
-                            List<WestCard> cards = new ArrayList<>();
-                            cards.add(card);
-                            rankMap.put(rank, cards);
-                        }
+                if (rank == card.getRank()) {
+                    if (rankMap.containsKey(rank)) {
+                        rankMap.get(rank).add(card);
+                    } else {
+                        List<WestCard> cards = new ArrayList<>();
+                        cards.add(card);
+                        rankMap.put(rank, cards);
                     }
                 }
             }
@@ -77,14 +75,12 @@ public abstract class PhomPlayer extends Player<WestCard> {
         // Find all combinations by suit
         Map<String, List<WestCard>> suitMap = new HashMap<>();
         for (WestCard card : this.getHand()) {
-            if (card != null) {
-                if (suitMap.containsKey(card.getSuit().getValue())) {
-                    suitMap.get(card.getSuit().getValue()).add(card);
-                } else {
-                    List<WestCard> cards = new ArrayList<>();
-                    cards.add(card);
-                    suitMap.put(card.getSuit().getValue(), cards);
-                }
+            if (suitMap.containsKey(card.getSuit().getValue())) {
+                suitMap.get(card.getSuit().getValue()).add(card);
+            } else {
+                List<WestCard> cards = new ArrayList<>();
+                cards.add(card);
+                suitMap.put(card.getSuit().getValue(), cards);
             }
         }
         for (List<WestCard> cards : suitMap.values()) {
@@ -92,7 +88,7 @@ public abstract class PhomPlayer extends Player<WestCard> {
         }
 
         for (List<WestCard> cards : suitMap.values()) {
-            for (List<WestCard> cardsTemporary : findAllConsecutive(cards)) {
+            for( List<WestCard> cardsTemporary : findAllConsecutive(cards)) {
                 allPhoms.add(cardsTemporary);
             }
         }
@@ -104,12 +100,13 @@ public abstract class PhomPlayer extends Player<WestCard> {
         int numberOfConsecutive = 1;
         List<WestCard> subResult = new ArrayList<>();
         subResult.add(cards.get(0));
-        for (int i = 0; i < cards.size() - 1; i++) {
-            if (cards.get(i).getRank().getValue() + 1 == cards.get(i + 1).getRank().getValue()) {
+        for(int i = 0; i < cards.size() - 1; i++) {
+            if(cards.get(i).getRank().getValue() + 1 == cards.get(i + 1).getRank().getValue()) {
                 numberOfConsecutive++;
                 subResult.add(cards.get(i + 1));
-            } else {
-                if (numberOfConsecutive >= 3) {
+            }
+            else{
+                if(numberOfConsecutive >= 3) {
                     result.add(subResult);
                 }
                 subResult = new ArrayList<>();
@@ -117,26 +114,30 @@ public abstract class PhomPlayer extends Player<WestCard> {
                 numberOfConsecutive = 1;
             }
         }
-        if (numberOfConsecutive >= 3) {
+        if(numberOfConsecutive >= 3) {
             result.add(subResult);
         }
         return result;
     }
 
+
     public int calculateScore() {
         int score = 0;
+
+        List<WestCard> remainingCards = new ArrayList<>(this.getHand());
+
         for (List<WestCard> phom : findCombinations()) {
-            this.getHand().removeAll(phom);
+            remainingCards.removeAll(phom);
         }
-        for (WestCard card : this.getHand()) {
+
+        for (WestCard card : remainingCards) {
             score += card.getRank().getValue();
         }
+
         return score;
     }
 
     public abstract boolean decideToEat(WestCard discardedCard);
-
     public abstract WestCard decideDiscard();
-
     public abstract Map<WestCard, List<WestCard>> decideSends(PhomGameState gameState);
 }

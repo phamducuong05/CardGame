@@ -53,9 +53,7 @@ public abstract class Game<T extends Card, P extends Player<T>> {
         return currentPlayer;
     }
 
-    public boolean isGameOver() {
-        return gameState;
-    }
+
 
     public abstract P getFirstPlayer(List<P> players);
 

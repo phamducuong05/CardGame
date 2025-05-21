@@ -17,38 +17,38 @@ public class TienLenGameViewController implements TienLenViewController {
 
     private TienLenLogicController logicController;
     private List<WestCard> selectedCards = new ArrayList<>();
-    
+
     /**
      * Constructor
      */
     public TienLenGameViewController() {
         System.out.println("TienLenGameViewController created - JavaFX would be initialized here");
     }
-    
+
     @Override
     public void setLogicController(TienLenLogicController logicController) {
         this.logicController = logicController;
         System.out.println("LogicController set");
     }
-    
+
     @Override
     public void updateView(TienLenGameState gameState) {
         System.out.println("Updating view with game state");
         // In a real implementation, would update UI elements
         updatePlayerHands(gameState);
     }
-    
+
     @Override
     public void onGameStarted(TienLenGameState gameState) {
         System.out.println("Game started");
         updateView(gameState);
     }
-    
+
     @Override
     public void onGamePaused() {
         System.out.println("Game paused");
     }
-    
+
     @Override
     public void onGameResumed() {
         System.out.println("Game resumed");
@@ -56,20 +56,20 @@ public class TienLenGameViewController implements TienLenViewController {
             updateView(logicController.getGameLogic().getCurrentGameState());
         }
     }
-    
+
     @Override
     public void onGameEnded(TienLenGameState gameState, TienLenPlayer winner) {
         System.out.println("Game ended. Winner: " + winner.getName());
         updateView(gameState);
     }
-    
+
     @Override
     public void promptPlayerForAction(TienLenPlayer player, TienLenGameState gameState) {
         System.out.println("Prompting player " + player.getName() + " for action");
         // In a real implementation, would enable appropriate UI controls
         // For TienLen, this would enable card selection and play/pass buttons
     }
-    
+
     @Override
     public void showInvalidMoveMessage() {
         System.out.println("Invalid move! Please try again.");
@@ -78,7 +78,7 @@ public class TienLenGameViewController implements TienLenViewController {
 
     /**
      * Update the display of player hands
-     * 
+     *
      * @param gameState The current game state
      */
     public void updatePlayerHands(TienLenGameState gameState) {
@@ -92,7 +92,7 @@ public class TienLenGameViewController implements TienLenViewController {
 
     /**
      * Handle card click event
-     * 
+     *
      * @param card The card that was clicked
      */
     public void handleCardClick(WestCard card) {
@@ -135,4 +135,5 @@ public class TienLenGameViewController implements TienLenViewController {
             logicController.handleDeal();
         }
     }
-} 
+
+}
