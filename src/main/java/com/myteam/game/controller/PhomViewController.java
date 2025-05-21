@@ -1,8 +1,8 @@
-package controller;
+package com.myteam.game.controller;
 
-import model.core.card.WestCard;
-import model.phom.PhomGameState;
-import model.phom.PhomPlayer;
+import com.myteam.game.model.core.card.WestCard;
+import com.myteam.game.model.phom.PhomGameState;
+import com.myteam.game.model.phom.PhomPlayer;
 
 /**
  * Interface for PhomViewController

@@ -1,11 +1,11 @@
-package controller;
+package com.myteam.game.controller;
 
-import model.core.card.WestCard;
-import model.game.TienLenMienBacGameLogic;
-import model.tienlen.TienLenGameState;
-import model.tienlen.TienLenPlayer;
-import model.tienlen.TienLenBotPlayer;
-import view.TienLenGameViewController;
+import com.myteam.game.model.core.card.WestCard;
+import com.myteam.game.model.game.TienLenMienBacGameLogic;
+import com.myteam.game.model.tienlen.TienLenGameState;
+import com.myteam.game.model.tienlen.TienLenPlayer;
+import com.myteam.game.model.tienlen.TienLenBotPlayer;
+import com.myteam.game.view.TienLenGameViewController;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
-package controller;
+package com.myteam.game.controller;
 
-import model.core.card.WestCard;
-import model.tienlen.TienLenGameState;
-import model.tienlen.TienLenPlayer;
+import com.myteam.game.model.core.card.WestCard;
+import com.myteam.game.model.tienlen.TienLenGameState;
+import com.myteam.game.model.tienlen.TienLenPlayer;
 
 import java.util.List;
 

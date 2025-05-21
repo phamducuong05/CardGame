@@ -1,12 +1,12 @@
-package controller;
+package com.myteam.game.controller;
 
-import model.core.card.WestCard;
-import model.game.PhomGameLogic;
-import model.phom.PhomGameState;
-import model.phom.PhomPlayer;
-import model.phom.PhomBotPlayer;
-import model.phom.PhomPlayerAction;
-import view.PhomGameViewController;
+import com.myteam.game.model.core.card.WestCard;
+import com.myteam.game.model.game.PhomGameLogic;
+import com.myteam.game.model.phom.PhomGameState;
+import com.myteam.game.model.phom.PhomPlayer;
+import com.myteam.game.model.phom.PhomBotPlayer;
+import com.myteam.game.model.phom.PhomPlayerAction;
+import com.myteam.game.view.PhomGameViewController;
 
 import java.util.List;
 

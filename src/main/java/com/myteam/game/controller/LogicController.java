@@ -1,8 +1,8 @@
-package controller;
+package com.myteam.game.controller;
 
-import model.core.card.Card;
-import model.game.Game;
-import model.player.Player;
+import com.myteam.game.model.core.card.Card;
+import com.myteam.game.model.game.Game;
+import com.myteam.game.model.player.Player;
 
 import java.util.List;
 
