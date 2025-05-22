@@ -17,6 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 // import javafx.stage.Stage; // Không cần cho nút Deal
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 // Imports từ logic game của bạn
 import com.myteam.game.controller.PhomLogicController;
@@ -307,9 +308,6 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         // Cập nhật nọc bài
         updateCenterDeckDisplay(logicController.getGameLogic().getDeck().size());
 
-        // Cập nhật chỉ báo lượt chơi
-        // updateTurnIndicator(gameState.getCurrentPlayer()); // Tạm thời comment
-
         // Cập nhật trạng thái nút
         // updateActionButtonsState(gameState); // Tạm thời comment
 
@@ -324,7 +322,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
             dealButton.setVisible(false);
             dealButton.setManaged(false);
         }
-        setGameActionButtonsVisible(true); // Hiện các nút cơ bản sau khi Deal
+        // setGameActionButtonsVisible(true); // Hiện các nút cơ bản sau khi Deal
         updateAllOpponentCardCountsVisibility(true); // Hiện label đếm bài của đối thủ
     }
 
@@ -443,6 +441,10 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
             clearAllPlayerAreasForNewGame();
             logicController.handleDeal(); // LogicController sẽ gọi gameLogic.startGame()
                                           // và sau đó gọi lại this.updateView(newState)
+            if (dealButton != null) {
+                dealButton.setVisible(false);
+                dealButton.setManaged(false);
+            }
         } else {
             System.err.println("LogicController is not set. Cannot deal cards.");
         }
@@ -531,6 +533,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
 
         PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
         PhomPlayer mainHumanPlayer = gameState.getCurrentPlayer();
+        setGameActionButtonsVisible(false);
         logicController.playerRequestsDiscardSingleCard(mainHumanPlayer, cardToPlay);
     }
 
@@ -542,6 +545,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
         PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
         PhomPlayer mainHumanPlayer = gameState.getCurrentPlayer();
+        setGameActionButtonsVisible(false);
         logicController.playerRequestsDraw(mainHumanPlayer);
     }
 
@@ -558,6 +562,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
             showUIMessage("Không có lá bài nào để ăn.");
             return;
         }
+        setGameActionButtonsVisible(false);
         logicController.playerRequestsEat(mainHumanPlayer, cardToEat);
 
     }
@@ -569,12 +574,16 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
 
     public void promptPlayerToDiscard(PhomPlayer player, PhomGameState gameState) {
         // System.out.println("UI: " + player.getName() + ", please discard.");
-        PhomPlayer mainHuman = logicController.getGameLogic().getPlayers().get(MAIN_PLAYER_INDEX);
-        if (player.equals(mainHuman)) {
-            this.mainPlayerHasDrawnOrEatenThisTurn = true; // Đã bốc/ăn hoặc lượt đầu -> phải đánh
-        }
-        if (gameState != null) {
-        } // updateActionButtonsState(gameState);
+        // PhomPlayer mainHuman =
+        // logicController.getGameLogic().getPlayers().get(MAIN_PLAYER_INDEX);
+        // if (player.equals(mainHuman)) {
+        // this.mainPlayerHasDrawnOrEatenThisTurn = true; // Đã bốc/ăn hoặc lượt đầu ->
+        // phải đánh
+        // }
+        // if (gameState != null) {
+        // updateActionButtonsState(gameState);
+        playButton.setVisible(true);
+        playButton.setManaged(true);
     }
 
     public void promptPlayerToEatOrDraw(PhomPlayer player, WestCard cardToEat, PhomGameState gameState) {
@@ -587,6 +596,34 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         // else { System.out.println("UI: " + player.getName() + ", please draw."); }
         if (gameState != null) {
         } // updateActionButtonsState(gameState);
+    }
+
+    public void promptPlayerToEat(PhomPlayer player, PhomGameState gameState) {
+        // System.out.println("UI: " + player.getName() + ", please discard.");
+        // PhomPlayer mainHuman =
+        // logicController.getGameLogic().getPlayers().get(MAIN_PLAYER_INDEX);
+        // if (player.equals(mainHuman)) {
+        // this.mainPlayerHasDrawnOrEatenThisTurn = true; // Đã bốc/ăn hoặc lượt đầu ->
+        // phải đánh
+        // }
+        // if (gameState != null) {
+        // updateActionButtonsState(gameState);
+        eatButton.setVisible(true);
+        eatButton.setManaged(true);
+    }
+
+    public void promptPlayerToDraw(PhomPlayer player, PhomGameState gameState) {
+        // System.out.println("UI: " + player.getName() + ", please discard.");
+        // PhomPlayer mainHuman =
+        // logicController.getGameLogic().getPlayers().get(MAIN_PLAYER_INDEX);
+        // if (player.equals(mainHuman)) {
+        // this.mainPlayerHasDrawnOrEatenThisTurn = true; // Đã bốc/ăn hoặc lượt đầu ->
+        // phải đánh
+        // }
+        // if (gameState != null) {
+        // updateActionButtonsState(gameState);
+        drawButton.setVisible(true);
+        drawButton.setManaged(true);
     }
 
     public void showInvalidMoveMessage(String message) {
@@ -622,5 +659,22 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         } else {
             System.exit(0); // Fallback if stage is not accessible
         }
+    }
+
+    void displayOpponentCards(List<WestCard> cards) {
+        HBox OpponentCardsReveal = new HBox();
+        OpponentCardsReveal.setSpacing(-50);
+        for (WestCard card : cards) {
+            ImageView cardView = createDisplayOnlyCardImageView(card);
+            OpponentCardsReveal.getChildren().add(cardView);
+        }
+        PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
+        PhomPlayer currentPlayer = gameState.getCurrentPlayer();
+        Pane cardArea = playerCardAreas[gameState.getPlayers().indexOf(currentPlayer)];
+        cardArea.getChildren().add(OpponentCardsReveal);
+
+        logicController.executeAfterDelay(Duration.seconds(5), () -> {
+            cardArea.getChildren().remove(cardArea.getChildren().size() - 1);
+        });
     }
 }

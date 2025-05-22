@@ -59,9 +59,10 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
     public void botDiscardCard() {
         PhomBotPlayer botPlayer = (PhomBotPlayer) currentPlayer;
-        botPlayer.getHand().remove(botPlayer.decideDiscard());
-        botPlayer.addDiscardCards(botPlayer.decideDiscard());
-        cardsOnTable = botPlayer.decideDiscard();
+        WestCard cardRemove = botPlayer.decideDiscard();
+        botPlayer.getHand().remove(cardRemove);
+        botPlayer.addDiscardCards(cardRemove);
+        cardsOnTable = cardRemove;
     }
 
     public void botSendCard() {
@@ -126,7 +127,6 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
         System.out.println("GameLogic: " + currentPlayer.getName() + " is eating " + cardToEatArgument);
 
-        
         currentPlayer.getEatenCards().add(cardToEatArgument);
 
         // 3. Xóa lá bài khỏi bàn chơi (rất quan trọng!)

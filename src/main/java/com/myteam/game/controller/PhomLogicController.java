@@ -148,7 +148,10 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
         if (currentPlayer instanceof PhomBotPlayer) {
             PhomBotPlayer bot = (PhomBotPlayer) currentPlayer;
             viewController.displayBotAction(bot.getName() + "'s turn");
-
+            System.out.println(bot.getName() + "'s turn");
+            for (WestCard card : currentPlayer.getHand()) {
+                System.out.println(card.toString());
+            }
             // Bước 1: Bot quyết định Ăn hoặc Bốc (Quyết định ngay, thực thi sau delay nhỏ)
             executeAfterDelay(Duration.seconds(2), () -> { // Độ trễ nhỏ trước khi Bot hành động đầu tiên
                 viewController.displayBotAction(bot.getName() + " is deciding to eat or draw");
@@ -205,8 +208,14 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
             if (viewController != null) {
                 WestCard cardOnTable = gameLogic.getCardsOnTable();
                 boolean canEatThisCard = (cardOnTable != null && gameLogic.canFormPhom(currentPlayer, cardOnTable));
-                viewController.promptPlayerToEatOrDraw(currentPlayer, canEatThisCard ? cardOnTable : null,
-                        gameLogic.getCurrentGameState());
+                if (canEatThisCard) {
+                    viewController.promptPlayerToEat(currentPlayer, gameLogic.getCurrentGameState());
+                } else {
+                    viewController.promptPlayerToDraw(currentPlayer, gameLogic.getCurrentGameState());
+                    // viewController.promptPlayerToEatOrDraw(currentPlayer, canEatThisCard ?
+                    // cardOnTable : null,
+                    // gameLogic.getCurrentGameState());
+                }
             }
         }
     }
@@ -217,7 +226,7 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
      * @param duration Thời gian trễ
      * @param action   Hành động cần thực thi
      */
-    private void executeAfterDelay(Duration duration, Runnable action) {
+    public void executeAfterDelay(Duration duration, Runnable action) {
         PauseTransition delay = new PauseTransition(duration);
         delay.setOnFinished(event -> {
             if (isGameRunning) { // Chỉ thực thi nếu game vẫn đang chạy
