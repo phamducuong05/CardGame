@@ -137,7 +137,6 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
     @Override
     public boolean endGame() {
         // end game khi hết bài bốc
-        int minScore = Integer.MAX_VALUE;
         if(deck.isEmpty()){
             return true;
         }
@@ -148,6 +147,16 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 return true;
             }
         }
+        int cnt = 0;
+        for (PhomPlayer player : players) {
+            if (player.getNumOfTurn() == 4) {
+                cnt++;
+            }
+        }
+        if(cnt == players.size()) {
+            return true;
+        }
+
         return false;
     }
 
