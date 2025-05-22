@@ -126,11 +126,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
         System.out.println("GameLogic: " + currentPlayer.getName() + " is eating " + cardToEatArgument);
 
-        // 1. Thêm lá bài vào tay người chơi hiện tại
-        currentPlayer.getHand().add(cardToEatArgument);
-
-        // 2. Thêm vào danh sách bài đã ăn của người chơi hiện tại (để hiển thị trong
-        // playerXPhomArea)
+        
         currentPlayer.getEatenCards().add(cardToEatArgument);
 
         // 3. Xóa lá bài khỏi bàn chơi (rất quan trọng!)
@@ -139,6 +135,10 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
         // Không cần thay đổi numOfTurn ở đây, nó tăng sau khi đánh bài.
         // Không cần cố gắng xóa khỏi discard pile của người chơi trước nếu
         // this.cardsOnTable quản lý lá bài active.
+
+        PhomPlayer previousPlayer = getPlayers()
+                .get((getPlayers().indexOf(currentPlayer) - 1 + getPlayers().size()) % getPlayers().size());
+        previousPlayer.getDiscardCards().remove(cardToEatArgument);
     }
 
     @Override
