@@ -183,7 +183,7 @@
          <top>
             <VBox alignment="CENTER" prefHeight="55.0" prefWidth="1030.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="330.0" text="Label">
+                  <Label fx:id="menuLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="330.0" text="Label">
                      <font>
                         <Font size="21.0" />
                      </font>

@@ -6,8 +6,14 @@ import com.myteam.game.model.phom.PhomGameState;
 import com.myteam.game.model.phom.PhomPlayer;
 import com.myteam.game.model.phom.PhomBotPlayer;
 import com.myteam.game.model.phom.PhomPlayerAction;
+
+import javafx.animation.PauseTransition;
+
 import com.myteam.game.PhomGameViewController;
 
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+import java.util.function.Consumer;
 import java.util.List;
 
 /**
@@ -52,12 +58,6 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
             // System.out.println("LogicCtrl: Player doesn't have card.");
             if (viewController != null)
                 viewController.showInvalidMoveMessage("Bạn không có lá bài này.");
-            return;
-        }
-        // Kiểm tra điều kiện đánh bài cơ bản (ví dụ: 10 lá)
-        if (requestingPlayer.getHand().size() < 10) {
-            if (viewController != null)
-                viewController.showInvalidMoveMessage("Cần 10 lá để đánh.");
             return;
         }
 
@@ -139,58 +139,67 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
         }
     }
 
+    @Override
     protected void checkAndPlayBotTurnIfNeeded() {
         if (!isGameRunning)
-            return; // Thêm kiểm tra này
+            return;
         PhomPlayer currentPlayer = gameLogic.getCurrentPlayer();
 
         if (currentPlayer instanceof PhomBotPlayer) {
             PhomBotPlayer bot = (PhomBotPlayer) currentPlayer;
-            // PhomGameState gameStateForView; // Không cần lấy gameState ở đây nữa nếu cập
-            // nhật đúng lúc
+            viewController.displayBotAction(bot.getName() + "'s turn");
 
-            WestCard topCard = gameLogic.getCardsOnTable();
-            boolean botActed = false; // Cờ để xem bot có ăn/bốc không, để biết có cần prompt đánh không
+            // Bước 1: Bot quyết định Ăn hoặc Bốc (Quyết định ngay, thực thi sau delay nhỏ)
+            executeAfterDelay(Duration.seconds(2), () -> { // Độ trễ nhỏ trước khi Bot hành động đầu tiên
+                viewController.displayBotAction(bot.getName() + " is deciding to eat or draw");
+                WestCard topCard = gameLogic.getCardsOnTable();
+                boolean botAte = false;
 
-            if (topCard != null && bot.decideToEat(topCard)) {
-                System.out.println("LogicCtrl: Bot " + bot.getName() + " eats " + topCard);
-                gameLogic.playerEatCard(topCard);
-                if (viewController != null) {
-                    // Lấy gameState MỚI NHẤT sau khi ăn
-                    viewController.updateView(gameLogic.getCurrentGameState());
-                }
-                botActed = true;
-            } else {
-                if (!gameLogic.getDeck().isEmpty()) { // Chỉ bốc nếu nọc còn bài
-                    System.out.println("LogicCtrl: Bot " + bot.getName() + " draws card.");
-                    gameLogic.playerDrawCard();
-                    if (viewController != null) {
-                        // Lấy gameState MỚI NHẤT sau khi bốc
-                        viewController.updateView(gameLogic.getCurrentGameState());
-                    }
-                    botActed = true;
+                if (topCard != null && bot.decideToEat(topCard)) {
+                    viewController.displayBotAction(bot.getName() + " eats " + topCard);
+                    gameLogic.playerEatCard(topCard);
+                    botAte = true;
                 } else {
-                    System.out.println(
-                            "LogicCtrl: Bot " + bot.getName() + " cannot eat and deck is empty. Passing to discard.");
+                    if (!gameLogic.getDeck().isEmpty()) {
+                        viewController.displayBotAction(bot.getName() + " draws card");
+                        gameLogic.playerDrawCard();
+                    } else {
+                        System.out.println("Bot " + bot.getName() + " cannot eat and deck is empty");
+                    }
                 }
-            }
 
-            // Sau khi ăn hoặc bốc (hoặc không làm gì nếu không ăn được và nọc hết)
-            // Bot sẽ đánh bài
-            // Hàm botDiscardCard của gameLogic sẽ tự lấy lá bài từ bot.decideDiscard()
-            // và cập nhật model.
-            if (bot.getHand().size() > 0) { // Chỉ đánh nếu bot còn bài
-                System.out.println("LogicCtrl: Bot " + bot.getName() + " is discarding.");
-                gameLogic.botDiscardCard(); // Hàm này nên bao gồm bot.decideDiscard() và cập nhật tay bot
+                // Cập nhật UI sau khi ăn/bốc
                 if (viewController != null) {
-                    // Lấy gameState MỚI NHẤT sau khi bot đánh
                     viewController.updateView(gameLogic.getCurrentGameState());
                 }
-            } else {
-                System.out.println("LogicCtrl: Bot " + bot.getName() + " has no cards to discard after action.");
-            }
 
-            nextTurn();
+                // Bước 2: Bot Đánh Bài (sau một độ trễ nữa)
+                // Chỉ thực hiện nếu bot còn bài
+                if (bot.getHand().size() > 0) {
+                    executeAfterDelay(Duration.seconds(2), () -> { // Độ trễ trước khi đánh
+                        viewController.displayBotAction(bot.getName() + " is discarding");
+                        gameLogic.botDiscardCard(); // Hàm này bao gồm bot.decideDiscard()
+
+                        // Cập nhật UI sau khi đánh
+                        if (viewController != null) {
+                            viewController.updateView(gameLogic.getCurrentGameState());
+                        }
+
+                        // Bước 3: Chuyển lượt (sau khi tất cả hành động của Bot đã xong)
+                        executeAfterDelay(Duration.seconds(1), () -> { // Delay nhỏ trước khi chuyển lượt
+                            viewController.displayBotAction(bot.getName() + " turn ended");
+                            nextTurn();
+                        });
+                    });
+                } else {
+                    // Bot không còn bài để đánh (có thể đã Ù hoặc lỗi logic)
+                    System.out.println("LogicCtrl: Bot " + bot.getName()
+                            + " has no cards to discard. Moving to next turn after delay.");
+                    executeAfterDelay(Duration.seconds(1), () -> {
+                        nextTurn();
+                    });
+                }
+            });
 
         } else { // Lượt của Human
             if (viewController != null) {
@@ -200,6 +209,22 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
                         gameLogic.getCurrentGameState());
             }
         }
+    }
+
+    /**
+     * Hàm tiện ích để thực thi một hành động sau một khoảng thời gian trễ.
+     * 
+     * @param duration Thời gian trễ
+     * @param action   Hành động cần thực thi
+     */
+    private void executeAfterDelay(Duration duration, Runnable action) {
+        PauseTransition delay = new PauseTransition(duration);
+        delay.setOnFinished(event -> {
+            if (isGameRunning) { // Chỉ thực thi nếu game vẫn đang chạy
+                action.run();
+            }
+        });
+        delay.play();
     }
 
     /**

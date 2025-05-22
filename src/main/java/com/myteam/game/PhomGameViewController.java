@@ -23,6 +23,7 @@ import com.myteam.game.controller.PhomLogicController;
 import com.myteam.game.model.core.card.WestCard;
 import com.myteam.game.model.core.enums.Rank;
 import com.myteam.game.model.phom.PhomGameState;
+import com.myteam.game.model.phom.PhomHumanPlayer;
 import com.myteam.game.model.phom.PhomPlayer;
 // import com.myteam.game.view.PhomGameViewController; // Interface này sẽ được implement bởi class này
 
@@ -339,7 +340,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
 
             cardArea.getChildren().clear();
 
-            if (i == MAIN_PLAYER_INDEX) { // Người chơi chính
+            if (players.get(i) instanceof PhomHumanPlayer) { // Người chơi chính
                 if (player != null && player.getHand() != null) {
                     for (WestCard card : player.getHand()) {
                         ImageView cardView = createHandCardImageView(card);
@@ -479,9 +480,6 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     @FXML
     void handleCardClick(MouseEvent event) {
         ImageView clickedCardView = (ImageView) event.getSource();
-        if (clickedCardView.getParent() != playerCardAreas[MAIN_PLAYER_INDEX]) {
-            return; // Chỉ xử lý click trên bài của người chơi chính
-        }
 
         if (selectedImageViews.contains(clickedCardView)) {
             resetCardPosition(clickedCardView);
@@ -531,26 +529,37 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
         WestCard cardToPlay = (WestCard) selectedCardView.getUserData();
 
-        // Lấy người chơi human chính (giả định đơn giản)
-        PhomPlayer mainHumanPlayer = null;
-        if (logicController.getGameLogic() != null && !logicController.getGameLogic().getPlayers().isEmpty()) {
-            mainHumanPlayer = logicController.getGameLogic().getPlayers().get(MAIN_PLAYER_INDEX);
-        }
-        if (mainHumanPlayer == null) {
-            showUIMessage("Lỗi người chơi.");
-            return;
-        }
+        PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
+        PhomPlayer mainHumanPlayer = gameState.getCurrentPlayer();
         logicController.playerRequestsDiscardSingleCard(mainHumanPlayer, cardToPlay);
     }
 
     @FXML
     void handleDrawButton(ActionEvent event) {
-        // TODO
+        // Duc cuong yeu yen khanh nguyen my yen ngoc khanh linh
+        if (logicController == null) {
+            return;
+        }
+        PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
+        PhomPlayer mainHumanPlayer = gameState.getCurrentPlayer();
+        logicController.playerRequestsDraw(mainHumanPlayer);
     }
 
     @FXML
     void handleEatButton(ActionEvent event) {
-        // TODO
+        if (logicController == null) {
+            return;
+        }
+        PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
+        PhomPlayer mainHumanPlayer = gameState.getCurrentPlayer();
+
+        WestCard cardToEat = gameState.getCardOnTable();
+        if (cardToEat == null) {
+            showUIMessage("Không có lá bài nào để ăn.");
+            return;
+        }
+        logicController.playerRequestsEat(mainHumanPlayer, cardToEat);
+
     }
 
     @FXML
@@ -593,6 +602,16 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     public void showUIMessage(String message) { // Hàm này bạn đã có
         System.out.println("UI DISPLAY: " + message);
         // Cập nhật Label trên UI nếu có
+    }
+
+    public void setMenuLabel(String text) {
+        if (this.menuLabel != null) {
+            this.menuLabel.setText(text);
+        }
+    }
+
+    public void displayBotAction(String text) {
+        this.setMenuLabel(text);
     }
 
     @FXML
