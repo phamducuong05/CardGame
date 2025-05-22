@@ -63,6 +63,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
         botPlayer.getHand().remove(cardRemove);
         botPlayer.addDiscardCards(cardRemove);
         cardsOnTable = cardRemove;
+        currentPlayer.setNumOfTurn(currentPlayer.getNumOfTurn() + 1);
     }
 
     public void botSendCard() {
@@ -116,7 +117,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
         }
     }
 
-    public void playerEatCard(WestCard cardToEatArgument) { 
+    public void playerEatCard(WestCard cardToEatArgument) { // Đổi tên tham số để tránh nhầm lẫn với this.cardsOnTable
         if (currentPlayer == null || cardToEatArgument == null || this.cardsOnTable == null
                 || !this.cardsOnTable.equals(cardToEatArgument)) {
             System.err.println(
@@ -165,7 +166,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 cnt++;
             }
         }
-        if (cnt == players.size()) {
+        if (cnt > players.size()) {
             return true;
         }
 
@@ -262,6 +263,8 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 winnerPlayer,
                 cardsOnTable);
     }
+
+    
 
     public WestCard getCardsOnTable() {
         return cardsOnTable;
