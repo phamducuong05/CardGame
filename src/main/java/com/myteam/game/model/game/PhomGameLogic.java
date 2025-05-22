@@ -264,7 +264,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 cardsOnTable);
     }
 
-    
+
 
     public WestCard getCardsOnTable() {
         return cardsOnTable;

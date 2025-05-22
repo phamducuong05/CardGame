@@ -327,9 +327,9 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         // updateActionButtonsState(gameState); // Tạm thời comment
 
         // Xử lý game over
-        // if (gameState.isGameOver()) {
-        // displayGameOver(gameState);
-        // }
+        if (gameState.isGameOver()) {
+            displayGameOver(gameState);
+        }
 
         // Sau khi chia bài xong, nút Deal nên ẩn đi và các nút hành động game nên hiện
         // ra
@@ -691,5 +691,25 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         logicController.executeAfterDelay(Duration.seconds(20), () -> {
             cardArea.getChildren().remove(OpponentCardsReveal);
         });
+    }
+
+    public void displayGameOver(PhomGameState gameState) {
+
+        setGameActionButtonsVisible(false);
+        if (exitButton != null) {
+            exitButton.setVisible(true);
+            exitButton.setManaged(true);
+        }
+    }
+
+    public void showGameOver(PhomPlayer winnerPlayer) {
+        String winner = winnerPlayer.getName();
+        if (menuLabel != null) {
+            menuLabel.setText("Game Over! Người thắng: " + winner);
+        }
+        if (exitButton != null) {
+            exitButton.setVisible(true);
+            exitButton.setManaged(true);
+        }
     }
 }
