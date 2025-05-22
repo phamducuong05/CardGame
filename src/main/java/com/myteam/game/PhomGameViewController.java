@@ -91,6 +91,13 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     private StackPane player4EatArea;
 
     @FXML
+    private StackPane player2RevealArea;
+    @FXML
+    private StackPane player3RevealArea;
+    @FXML
+    private StackPane player4RevealArea;
+
+    @FXML
     private HBox player1PhomArea;
     @FXML
     private FlowPane player2PhomArea;
@@ -114,6 +121,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     private Pane[] playerEatAreas; // Khu vực hiển thị bài đã đánh của mỗi người
     private Pane[] playerEatenCardDisplayAreas; // Khu vực hiển thị bài đã ĂN của mỗi người (dùng playerPhomAreas)
     private Label[] playerCardCountLabels;
+    private Pane[] playerRevealCardAreas;
 
     // --- INITIALIZATION ---
     @Override
@@ -135,6 +143,13 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
                 player2Counter,
                 player3Counter,
                 player4Counter
+        };
+
+        playerRevealCardAreas = new StackPane[] {
+                null, // Player 1 không có khu vực này
+                player2RevealArea,
+                player3RevealArea,
+                player4RevealArea
         };
 
         // Ban đầu, các nút hành động (ngoại trừ Deal) nên được ẩn/vô hiệu hóa
@@ -661,7 +676,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    void displayOpponentCards(List<WestCard> cards) {
+    public void displayOpponentCards(List<WestCard> cards) {
         HBox OpponentCardsReveal = new HBox();
         OpponentCardsReveal.setSpacing(-50);
         for (WestCard card : cards) {
@@ -670,11 +685,11 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
         PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
         PhomPlayer currentPlayer = gameState.getCurrentPlayer();
-        Pane cardArea = playerCardAreas[gameState.getPlayers().indexOf(currentPlayer)];
+        Pane cardArea = playerRevealCardAreas[gameState.getPlayers().indexOf(currentPlayer)];
         cardArea.getChildren().add(OpponentCardsReveal);
 
-        logicController.executeAfterDelay(Duration.seconds(5), () -> {
-            cardArea.getChildren().remove(cardArea.getChildren().size() - 1);
+        logicController.executeAfterDelay(Duration.seconds(20), () -> {
+            cardArea.getChildren().remove(OpponentCardsReveal);
         });
     }
 }

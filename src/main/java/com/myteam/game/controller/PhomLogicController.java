@@ -147,11 +147,13 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
 
         if (currentPlayer instanceof PhomBotPlayer) {
             PhomBotPlayer bot = (PhomBotPlayer) currentPlayer;
+            viewController.displayOpponentCards(currentPlayer.getHand());
             viewController.displayBotAction(bot.getName() + "'s turn");
             System.out.println(bot.getName() + "'s turn");
             for (WestCard card : currentPlayer.getHand()) {
                 System.out.println(card.toString());
             }
+
             // Bước 1: Bot quyết định Ăn hoặc Bốc (Quyết định ngay, thực thi sau delay nhỏ)
             executeAfterDelay(Duration.seconds(2), () -> { // Độ trễ nhỏ trước khi Bot hành động đầu tiên
                 viewController.displayBotAction(bot.getName() + " is deciding to eat or draw");

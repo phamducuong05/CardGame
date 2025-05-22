@@ -116,7 +116,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
         }
     }
 
-    public void playerEatCard(WestCard cardToEatArgument) { // Đổi tên tham số để tránh nhầm lẫn với this.cardsOnTable
+    public void playerEatCard(WestCard cardToEatArgument) { 
         if (currentPlayer == null || cardToEatArgument == null || this.cardsOnTable == null
                 || !this.cardsOnTable.equals(cardToEatArgument)) {
             System.err.println(
