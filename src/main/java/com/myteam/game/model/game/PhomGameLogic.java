@@ -22,12 +22,15 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
 
     public PhomGameLogic() {
+        this.MeldedCards = new ArrayList<>();
+        // Và các trường khác nếu cần
     }
 
     public PhomGameLogic(Deck<WestCard, PhomPlayer> deck, List<PhomPlayer> players, int numberOfCards) {
         super(deck, players, numberOfCards);
         cardsOnTable = null;
-
+        this.MeldedCards = new ArrayList<>(); // KHỞI TẠO MeldedCards Ở ĐÂY!
+        this.winnerPlayer = null;
     }
 
     @Override

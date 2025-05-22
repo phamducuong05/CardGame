@@ -41,5 +41,4 @@ public class WestCard extends Card {
         return rank.name() + " of " + suit.name();
     }
 
-
 }

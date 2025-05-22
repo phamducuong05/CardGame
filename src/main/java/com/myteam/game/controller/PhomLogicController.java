@@ -6,7 +6,7 @@ import com.myteam.game.model.phom.PhomGameState;
 import com.myteam.game.model.phom.PhomPlayer;
 import com.myteam.game.model.phom.PhomBotPlayer;
 import com.myteam.game.model.phom.PhomPlayerAction;
-import com.myteam.game.view.PhomGameViewController;
+import com.myteam.game.PhomGameViewController;
 
 import java.util.List;
 
@@ -21,6 +21,7 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
 
     public PhomLogicController(PhomGameLogic gameLogic) {
         super(gameLogic);
+        this.isGameRunning = false;
     }
 
     /**
@@ -30,6 +31,38 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
      */
     public void setViewController(PhomGameViewController viewController) {
         this.viewController = viewController;
+    }
+
+    public void playerRequestsDiscardSingleCard(PhomPlayer requestingPlayer, WestCard cardToDiscard) {
+        if (!isGameRunning) {
+            // System.out.println("LogicCtrl: Game not running.");
+            if (viewController != null)
+                viewController.showInvalidMoveMessage("Game chưa bắt đầu!");
+            return;
+        }
+        // Kiểm tra lượt chơi cơ bản
+        if (requestingPlayer == null || !requestingPlayer.equals(gameLogic.getCurrentPlayer())) {
+            // System.out.println("LogicCtrl: Not player's turn.");
+            if (viewController != null)
+                viewController.showInvalidMoveMessage("Không phải lượt của bạn!");
+            return;
+        }
+        // Kiểm tra có bài không
+        if (!requestingPlayer.getHand().contains(cardToDiscard)) {
+            // System.out.println("LogicCtrl: Player doesn't have card.");
+            if (viewController != null)
+                viewController.showInvalidMoveMessage("Bạn không có lá bài này.");
+            return;
+        }
+        // Kiểm tra điều kiện đánh bài cơ bản (ví dụ: 10 lá)
+        if (requestingPlayer.getHand().size() < 10) {
+            if (viewController != null)
+                viewController.showInvalidMoveMessage("Cần 10 lá để đánh.");
+            return;
+        }
+
+        // Gọi processPlayerMove
+        processPlayerMove(requestingPlayer, new PhomPlayerAction.DiscardCardAction(cardToDiscard));
     }
 
     @Override
@@ -42,7 +75,7 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
         if (move instanceof PhomPlayerAction.DrawCardAction) {
             // Player draws a card from the deck
             gameLogic.playerDrawCard();
-            viewController.updatePlayerHands(gameLogic.getCurrentGameState());
+            viewController.updateView(gameLogic.getCurrentGameState());
 
             if (viewController != null) {
                 viewController.promptPlayerToDiscard(player, gameLogic.getCurrentGameState());
@@ -58,7 +91,7 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
 
             // Use the game's state to remove the card from the table
             PhomGameState gameState = gameLogic.getCurrentGameState();
-            viewController.updatePlayerHands(gameState);
+            viewController.updateView(gameState);
             // viewController.updateDiscardPile
 
             // After eating, player must discard a card
@@ -70,96 +103,104 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
             // Player discards a card
             PhomPlayerAction.DiscardCardAction discardAction = (PhomPlayerAction.DiscardCardAction) move;
             WestCard cardToDiscard = discardAction.getCard();
-            // Implement discard logic here
-            gameLogic.humanDiscardCard(cardToDiscard);
-            // Add to cards on table in the game state
-            PhomGameState gameState = gameLogic.getCurrentGameState();
-            // update hand and updateDiscardPile
-            viewController.updatePlayerHands(gameState);
-            // viewController.updateDiscardPile
 
-            // Move to next turn after discard
+            gameLogic.humanDiscardCard(cardToDiscard); // Cập nhật model
+
+            if (viewController != null) {
+                viewController.updateView(gameLogic.getCurrentGameState()); // Cập nhật UI
+            }
             nextTurn();
 
-        } else if(move instanceof PhomPlayerAction.SendCardsAction) {
+        } else if (move instanceof PhomPlayerAction.SendCardsAction) {
 
         }
     }
 
     public void handleDeal() {
         gameLogic.startGame();
-        viewController.updatePlayerHands(gameLogic.getCurrentGameState());
-        viewController.promptPlayerToDiscard(gameLogic.getCurrentGameState().getCurrentPlayer(), gameLogic.getCurrentGameState());
+        this.isGameRunning = true;
+        viewController.updateView(gameLogic.getCurrentGameState());
+        viewController.promptPlayerToDiscard(gameLogic.getCurrentGameState().getCurrentPlayer(),
+                gameLogic.getCurrentGameState());
         // Trong hàm này ta sẽ bảo view hiển thị nút đánh bài
     }
 
     @Override
     protected void nextTurn() {
-        if(!gameLogic.endGame()) {
+        if (!gameLogic.endGame()) {
             if (gameLogic.getCurrentPlayer().getNumOfTurn() == 4) {
                 gameLogic.playerMeldCard();
                 // viewUpdateMeldCards
-                viewController.updatePlayerHands(gameLogic.getCurrentGameState());
+                viewController.updateView(gameLogic.getCurrentGameState());
             }
             gameLogic.nextTurn();
-            viewController.updatePlayerHands(gameLogic.getCurrentGameState());
+            viewController.updateView(gameLogic.getCurrentGameState());
             checkAndPlayBotTurnIfNeeded();
         }
     }
 
-    @Override
     protected void checkAndPlayBotTurnIfNeeded() {
+        if (!isGameRunning)
+            return; // Thêm kiểm tra này
         PhomPlayer currentPlayer = gameLogic.getCurrentPlayer();
-
-        // If current player is a bot, play its turn automatically ở đây ta
-        // sẽ chia ra các hàm ở trong phần logic để làm và sau đó
-        // sẽ update view ở trong controller này luôn ứng với từng hành động
-        // Đầu tiên check xem có ăn được không, nếu ăn được thì update displayHand
-        // và update display discardPile
-        // Sau khi check có ăn được không thì sẽ đến hành động bốc bài và đánh bài
-        // Sau hành động đánh bài lại gọi đến update Hand và update discardPile
-        // rồi lại gọi DiscardPile
-        // Nếu sau khi chạy nextTurn và trong hàm checkAndPlayBot thấy người chơi hiện tại
-        // không phải là Bot thì phải update PlayerHand và check xem người chơi có ăn được
-        // hay không, nếu ăn được thì phải prompt eat
-        // nếu không ăn được thì phải prompt draw và prompt playCard
 
         if (currentPlayer instanceof PhomBotPlayer) {
             PhomBotPlayer bot = (PhomBotPlayer) currentPlayer;
-            PhomGameState gameState = gameLogic.getCurrentGameState();
+            // PhomGameState gameStateForView; // Không cần lấy gameState ở đây nữa nếu cập
+            // nhật đúng lúc
 
-            // First check if bot can/wants to eat the top card on table
             WestCard topCard = gameLogic.getCardsOnTable();
+            boolean botActed = false; // Cờ để xem bot có ăn/bốc không, để biết có cần prompt đánh không
+
             if (topCard != null && bot.decideToEat(topCard)) {
-                // Bot decides to eat card
+                System.out.println("LogicCtrl: Bot " + bot.getName() + " eats " + topCard);
                 gameLogic.playerEatCard(topCard);
-                viewController.updatePlayerHands(gameState);
-                // viewController.updateDiscardPile
+                if (viewController != null) {
+                    // Lấy gameState MỚI NHẤT sau khi ăn
+                    viewController.updateView(gameLogic.getCurrentGameState());
+                }
+                botActed = true;
+            } else {
+                if (!gameLogic.getDeck().isEmpty()) { // Chỉ bốc nếu nọc còn bài
+                    System.out.println("LogicCtrl: Bot " + bot.getName() + " draws card.");
+                    gameLogic.playerDrawCard();
+                    if (viewController != null) {
+                        // Lấy gameState MỚI NHẤT sau khi bốc
+                        viewController.updateView(gameLogic.getCurrentGameState());
+                    }
+                    botActed = true;
+                } else {
+                    System.out.println(
+                            "LogicCtrl: Bot " + bot.getName() + " cannot eat and deck is empty. Passing to discard.");
+                }
             }
-            else {
-                // Bot draws a card
-                gameLogic.playerDrawCard();
-                viewController.updatePlayerHands(gameLogic.getCurrentGameState());
+
+            // Sau khi ăn hoặc bốc (hoặc không làm gì nếu không ăn được và nọc hết)
+            // Bot sẽ đánh bài
+            // Hàm botDiscardCard của gameLogic sẽ tự lấy lá bài từ bot.decideDiscard()
+            // và cập nhật model.
+            if (bot.getHand().size() > 0) { // Chỉ đánh nếu bot còn bài
+                System.out.println("LogicCtrl: Bot " + bot.getName() + " is discarding.");
+                gameLogic.botDiscardCard(); // Hàm này nên bao gồm bot.decideDiscard() và cập nhật tay bot
+                if (viewController != null) {
+                    // Lấy gameState MỚI NHẤT sau khi bot đánh
+                    viewController.updateView(gameLogic.getCurrentGameState());
+                }
+            } else {
+                System.out.println("LogicCtrl: Bot " + bot.getName() + " has no cards to discard after action.");
             }
-            gameLogic.botDiscardCard();
-            viewController.updatePlayerHands(gameState);
-            // viewController.updateDiscardPile
+
             nextTurn();
 
-        } else {
-            // Human player's turn - prompt for action via the view controller
+        } else { // Lượt của Human
             if (viewController != null) {
-                if(gameLogic.canFormPhom(currentPlayer, gameLogic.getCardsOnTable())) {
-                    //viewController.promptPlayerToEat();
-                }
-                else {
-                    //viewController.promptPlayerToDraw();
-                }
+                WestCard cardOnTable = gameLogic.getCardsOnTable();
+                boolean canEatThisCard = (cardOnTable != null && gameLogic.canFormPhom(currentPlayer, cardOnTable));
+                viewController.promptPlayerToEatOrDraw(currentPlayer, canEatThisCard ? cardOnTable : null,
+                        gameLogic.getCurrentGameState());
             }
         }
     }
-
-
 
     /**
      * Find the winner of the game based on current game state
@@ -194,32 +235,30 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
 
     // API methods for ViewController to call
 
-
     public void playerRequestsDraw(PhomPlayer player) {
         processPlayerMove(player, new PhomPlayerAction.DrawCardAction());
     }
-
 
     public void playerRequestsEat(PhomPlayer player, WestCard card) {
         processPlayerMove(player, new PhomPlayerAction.EatCardAction(card));
     }
 
-
     public void playerRequestsDiscard(PhomPlayer player, List<WestCard> cards) {
-        if(gameLogic.isValidMove(cards)) {
+        if (gameLogic.isValidMove(cards)) {
             WestCard card = cards.getFirst();
             processPlayerMove(player, new PhomPlayerAction.DiscardCardAction(card));
-        }
-        else {
+        } else {
             System.out.println("Error"); // Ở đây UI/UX sẽ thông báo lỗi ra màn hình
         }
     }
 
-    public void playerRequestsSendCards(PhomPlayer player, WestCard cardToSend, List<WestCard> targetPhom, PhomPlayer targetPlayer) {
+    public void playerRequestsSendCards(PhomPlayer player, WestCard cardToSend, List<WestCard> targetPhom,
+            PhomPlayer targetPlayer) {
         // Kiểm tra xem có phải là pha gửi bài không
         if (gameLogic.isSendingPhase()) {
             // Tạo một hành động gửi bài
-            PhomPlayerAction.SendCardsAction sendAction = new PhomPlayerAction.SendCardsAction(cardToSend, targetPhom, targetPlayer);
+            PhomPlayerAction.SendCardsAction sendAction = new PhomPlayerAction.SendCardsAction(cardToSend, targetPhom,
+                    targetPlayer);
             // Xử lý hành động gửi bài
             processPlayerMove(player, sendAction);
         } else {
