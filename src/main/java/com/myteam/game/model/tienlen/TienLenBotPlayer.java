@@ -4,7 +4,6 @@ import com.myteam.game.model.core.card.WestCard;
 import com.myteam.game.model.core.card.WestCardComparator;
 import com.myteam.game.model.core.enums.Rank;
 import com.myteam.game.model.game.TienLenMienBacGameLogic;
-import com.myteam.game.model.player.Player;
 
 import java.util.*;
 
@@ -14,111 +13,32 @@ import java.util.*;
 public class TienLenBotPlayer extends TienLenPlayer {
     private final TienLenMienBacGameLogic gameLogic = new TienLenMienBacGameLogic();
 
-    /**
-     * Constructor
-     *
-     * @param name The name of the bot player
-     */
     public TienLenBotPlayer(String name) {
         super(name);
-    }
-
-    public boolean isPlaying() {
-        return getState() == State.PLAYING;
     }
 
     public void sortHand(){
         getHand().sort(Comparator.comparing((WestCard c) -> c.getRank().ordinal()).thenComparing((WestCard c) -> c.getSuit().ordinal()));
     }
 
-    /**
-     * Decide which cards to play based on the current game state
-     *
-     * @param gameState The current game state
-     * @return The cards to play, or null/empty to pass
-     */
+    @Override
     public List<WestCard> decideCardsToPlay(TienLenGameState gameState) {
-        List<WestCard> hand = getHand();
-        //List<WestCard> lastPlayed = gameState.getLastPlayedCards();
+        List<WestCard> cardsOnTable = gameState.getCardsOnTable();
 
-        // If this is the first play or we are starting a new round, play the lowest card
-//        if (lastPlayed == null || lastPlayed.isEmpty()) {
-//            return findLowestSingleCard();
-//        }
-//
-//        // Try to find a play that beats the last play
-//        return findPlayThatBeatsLastPlay(lastPlayed);
-        return new ArrayList<>();
+        // Try to find a play that beats the last play
+        return autoPlay(cardsOnTable);
     }
 
     /**
-     * Find a single card with the lowest rank to play
-     *
-     * @return A list containing the lowest card, or empty if no cards left
+     * Methods for the bot to automatically play its turn
+     * @param cardsOnTable  The current cards on the table
+     * @return  List of cards to be played
      */
-    private List<WestCard> findLowestSingleCard() {
+    private List<WestCard> autoPlay(List<WestCard> cardsOnTable) {
+        Helper helper = new Helper(); // Class provides methods for bot to play according to the current table
         List<WestCard> hand = getHand();
-        if (hand.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // Sort hand by rank
-        hand.sort(Comparator.comparingInt(card -> card.getRank().ordinal()));
-
-        // Return lowest card
-        List<WestCard> result = new ArrayList<>();
-        result.add(hand.get(0));
-        return result;
-    }
-
-    /**
-     * Find a play that beats the last played cards
-     *
-     * @param lastPlayed The last played cards
-     * @return A list of cards that beats the last play, or empty to pass
-     */
-    private List<WestCard> findPlayThatBeatsLastPlay(List<WestCard> lastPlayed) {
-        // Must play same number of cards
-        int numCards = lastPlayed.size();
-        List<WestCard> hand = getHand();
-
-        if (numCards == 1) {
-            // Single card play
-            WestCard lastCard = lastPlayed.get(0);
-            for (WestCard card : hand) {
-                if (card.getRank().ordinal() > lastCard.getRank().ordinal()) {
-                    List<WestCard> result = new ArrayList<>();
-                    result.add(card);
-                    return result;
-                }
-            }
-        } else if (numCards == 2) {
-            // Pair play - simplified implementation
-            // In a real implementation, would check for valid pairs based on TienLen rules
-        } else if (numCards == 3) {
-            // Three of a kind - simplified implementation
-        } else if (numCards >= 4) {
-            // Straight or other combinations - simplified implementation
-        }
-
-        // No valid play found, pass
-        return new ArrayList<>();
-    }
-
-    /**
-     * Tự động đánh bài.
-     *
-     * Tìm nước đi phù hợp để chặn những quân trên bàn.
-     * Nếu có nước phù hợp thì sẽ setSelectedCards và playCard
-     * Nếu không có thì skipTurn
-     *
-     * @param cardsOnTable: Danh sách các quân bài đang ở trên bàn
-     */
-
-    public List<WestCard> autoPlay(List<WestCard> cardsOnTable) {
-        Helper helper = new Helper();
         List<WestCard> selected = new ArrayList<>();
-        // Analyze the current table
+
         boolean tableIsNone = cardsOnTable.isEmpty();
         boolean tableIsSingle = (cardsOnTable.size() == 1);
         boolean tableIsPair = gameLogic.isPair(cardsOnTable);
@@ -152,7 +72,6 @@ public class TienLenBotPlayer extends TienLenPlayer {
         }
 
         if (selected == null || selected.isEmpty()) {
-            skipTurn();
             return new ArrayList<>();
         } else {
             setSelectedCards(new ArrayList<>(selected));
@@ -162,6 +81,9 @@ public class TienLenBotPlayer extends TienLenPlayer {
         }
     }
 
+    /**
+     * Class to support the bot in choosing the right move to play
+     */
     private static class Helper{
         private final WestCardComparator comparator = new WestCardComparator();
         private final TienLenMienBacGameLogic gameLogic = new TienLenMienBacGameLogic();

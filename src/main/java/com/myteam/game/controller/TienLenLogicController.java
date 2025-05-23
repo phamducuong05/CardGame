@@ -86,9 +86,19 @@ public class TienLenLogicController extends LogicController<WestCard, TienLenPla
 
     @Override
     protected void nextTurn() {
-        gameLogic.nextTurn();
-        //view.updatehand
-        checkAndPlayBotTurnIfNeeded();
+        if(!gameLogic.endGame()) {
+            viewController.updatePlayerHands(gameLogic.getCurrentGameState());
+            viewController.updateView(gameLogic.getCurrentGameState());
+            checkAndPlayBotTurnIfNeeded();
+        }
+        else{
+            TienLenPlayer winner = findWinner();
+            if (viewController != null) {
+                viewController.onGameEnded(gameLogic.getCurrentGameState(), winner);
+            }
+            //System.out.println("Game Over! Winner: " + winner.getName());
+            isGameRunning = false;
+        }
     }
 
     @Override
@@ -117,10 +127,6 @@ public class TienLenLogicController extends LogicController<WestCard, TienLenPla
             }
         }
     }
-
-
-
-
 
     public void handleDeal() {
         gameLogic.startGame();
