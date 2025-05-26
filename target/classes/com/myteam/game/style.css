@@ -18,3 +18,12 @@
     -fx-padding: 3px 6px;
     -fx-background-radius: 5;
 }
+
+.game-background {
+    /* Đường dẫn từ gốc classpath (resources) */
+    -fx-background-image: url('/background.jpg');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    
+}

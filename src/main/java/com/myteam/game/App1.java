@@ -24,23 +24,17 @@ import com.myteam.game.model.tienlen.TienLenPlayer;
 import com.myteam.game.controller.TienLenLogicController;
 import com.myteam.game.model.game.TienLenMienBacGameLogic;
 
-/**
- * JavaFX App
- */
-public class App extends Application {
-
+public class App1 extends Application {
+    private static Stage stage; // Thêm biến stage để quản lý cửa sổ
     private static Scene scene;
 
     @Override
-    public void start(Stage stage) throws IOException {
-        // 1. Load FXML và lấy UI Controller
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("GameMenuView.fxml"));
-        Parent root = loader.load();
-        GameMenuController controller = loader.getController();
-        controller.setStage(stage); // Gán stage từ main app
-                                    // đúng
+    public void start(Stage primaryStage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(App1.class.getResource("GameMenuView.fxml"));
+        Parent root = fxmlLoader.load();
+
         scene = new Scene(root, 1430, 770); // Kích thước cửa sổ
-        stage.setTitle("TienLen Game");
+        stage.setTitle("Game Menu");
         stage.setScene(scene);
         stage.show();
     }
@@ -48,5 +42,4 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 }

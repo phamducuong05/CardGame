@@ -67,5 +67,4 @@ public class TienLenGameState {
     public List<WestCard> getCardsOnTable() {
         return cardsOnTable;
     }
-
 }

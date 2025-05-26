@@ -3,6 +3,7 @@ package com.myteam.game.model.tienlen;
 import com.myteam.game.model.core.card.WestCard;
 import com.myteam.game.model.core.card.WestCardComparator;
 import com.myteam.game.model.core.enums.Rank;
+import com.myteam.game.model.core.enums.Suit;
 import com.myteam.game.model.game.TienLenMienBacGameLogic;
 
 import java.util.*;
@@ -17,8 +18,9 @@ public class TienLenBotPlayer extends TienLenPlayer {
         super(name);
     }
 
-    public void sortHand(){
-        getHand().sort(Comparator.comparing((WestCard c) -> c.getRank().ordinal()).thenComparing((WestCard c) -> c.getSuit().ordinal()));
+    public void sortHand() {
+        getHand().sort(Comparator.comparing((WestCard c) -> c.getRank().ordinal())
+                .thenComparing((WestCard c) -> c.getSuit().ordinal()));
     }
 
     @Override
@@ -31,8 +33,9 @@ public class TienLenBotPlayer extends TienLenPlayer {
 
     /**
      * Methods for the bot to automatically play its turn
-     * @param cardsOnTable  The current cards on the table
-     * @return  List of cards to be played
+     * 
+     * @param cardsOnTable The current cards on the table
+     * @return List of cards to be played
      */
     private List<WestCard> autoPlay(List<WestCard> cardsOnTable) {
         Helper helper = new Helper(); // Class provides methods for bot to play according to the current table
@@ -46,10 +49,19 @@ public class TienLenBotPlayer extends TienLenPlayer {
         boolean tableIsFour = gameLogic.isFourOfKind(cardsOnTable);
         boolean tableIsSequence = gameLogic.isSequence(cardsOnTable);
 
-        cardsOnTable.sort(Comparator.comparing((WestCard c) -> c.getRank().ordinal()).thenComparing((WestCard c) -> c.getSuit().ordinal()));
+        // cardsOnTable.sort(Comparator.comparing((WestCard c) -> c.getRank().ordinal())
+        // .thenComparing((WestCard c) -> c.getSuit().ordinal()));
         sortHand();
 
         if (tableIsNone) {
+            if(gameLogic.isFirstTurn()) {
+                for (WestCard card : hand) {
+                    if (card.getRank() == Rank.THREE && card.getSuit() == Suit.SPADES) {
+                        selected = List.of(card);
+                        return selected;
+                    }
+                }
+            }
             WestCard randomCard = getHand().get(new Random().nextInt(handSize()));
             selected = List.of(randomCard);
         } else if (tableIsSingle) {
@@ -74,20 +86,18 @@ public class TienLenBotPlayer extends TienLenPlayer {
         if (selected == null || selected.isEmpty()) {
             return new ArrayList<>();
         } else {
-            setSelectedCards(new ArrayList<>(selected));
-            List<WestCard> played = playCard();
-            setSelectedCards(new ArrayList<>());
-            return played;
+            return selected;
         }
     }
 
     /**
      * Class to support the bot in choosing the right move to play
      */
-    private static class Helper{
+    private static class Helper {
         private final WestCardComparator comparator = new WestCardComparator();
         private final TienLenMienBacGameLogic gameLogic = new TienLenMienBacGameLogic();
-        public WestCard findSingleCard(List<WestCard> hand, List<WestCard> cardsOnTable){
+
+        public WestCard findSingleCard(List<WestCard> hand, List<WestCard> cardsOnTable) {
             WestCard topCard = cardsOnTable.getFirst();
 
             for (WestCard card : hand) {
@@ -107,7 +117,7 @@ public class TienLenBotPlayer extends TienLenPlayer {
         }
 
         public List<WestCard> findPair(List<WestCard> hand, List<WestCard> cardsOnTable) {
-            if(hand.size() < 2){
+            if (hand.size() < 2) {
                 return null;
             }
             for (int i = 0; i < hand.size() - 1; i++) {
@@ -122,11 +132,12 @@ public class TienLenBotPlayer extends TienLenPlayer {
         }
 
         public List<WestCard> findThree(List<WestCard> hand, List<WestCard> cardsOnTable) {
-            if(hand.size() < 3){
+            if (hand.size() < 3) {
                 return new ArrayList<>();
             }
             for (int i = 0; i < hand.size() - 2; i++) {
-                List<WestCard> selectedCards = Arrays.asList(hand.get(i), hand.get(i + 1), hand.get(i + 2));
+                List<WestCard> selectedCards = new ArrayList<>(
+                        Arrays.asList(hand.get(i), hand.get(i + 1), hand.get(i + 2)));
                 if (gameLogic.isThreeOfKind(selectedCards)
                         && gameLogic.isSameColor(selectedCards.getFirst(), cardsOnTable.getFirst())
                         && comparator.compare(selectedCards.getFirst(), cardsOnTable.getFirst()) > 0) {
@@ -137,11 +148,12 @@ public class TienLenBotPlayer extends TienLenPlayer {
         }
 
         public List<WestCard> findFour(List<WestCard> hand, List<WestCard> cardsOnTable) {
-            if(hand.size() < 4){
+            if (hand.size() < 4) {
                 return new ArrayList<>();
             }
             for (int i = 0; i < hand.size() - 3; i++) {
-                List<WestCard> selectedCards = Arrays.asList(hand.get(i), hand.get(i + 1), hand.get(i + 2), hand.get(i + 3));
+                List<WestCard> selectedCards = new ArrayList<>(
+                        Arrays.asList(hand.get(i), hand.get(i + 1), hand.get(i + 2), hand.get(i + 3)));
                 if (gameLogic.isFourOfKind(selectedCards)
                         && gameLogic.isSameColor(selectedCards.getFirst(), cardsOnTable.getFirst())
                         && comparator.compare(selectedCards.getFirst(), cardsOnTable.getFirst()) > 0) {
