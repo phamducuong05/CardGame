@@ -23,13 +23,11 @@
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/module-info.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/model/core/card/WestCard.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/model/game/Game.java
-/Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/view/TienLenGameViewController.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/controller/LogicController.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/model/phom/PhomGameState.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/model/phom/PhomPlayerAction.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/model/core/enums/Suit.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/TestTienLenGame.java
-/Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/view/PhomGameViewController.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/GameMenuLogicController.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/model/tienlen/TienLenBotPlayer.java
 /Users/user/Downloads/dcyeuyk/test_lomdom_cardGame/src/main/java/com/myteam/game/model/phom/PhomPlayer.java

@@ -19,9 +19,27 @@
     -fx-background-radius: 5;
 }
 
+.menu-label-gray-bg { /* Một class khác nếu bạn muốn nền xám */
+    -fx-background-color: #E0E0E0; /* Màu xám nhạt */
+    -fx-text-fill: black;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 6px;
+    -fx-background-radius: 5;
+}
+
 .game-background {
     /* Đường dẫn từ gốc classpath (resources) */
     -fx-background-image: url('/background.jpg');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    
+}
+
+.gamemenu-background {
+    /* Đường dẫn từ gốc classpath (resources) */
+    -fx-background-image: url('background.jpg');
     -fx-background-size: cover;
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;

@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="1430.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.PhomGameViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="1430.0" styleClass="game-background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.PhomGameViewController">
    <top>
       <HBox alignment="TOP_CENTER" prefHeight="200.0" spacing="5.0" BorderPane.alignment="TOP_CENTER">
          <children>
@@ -183,7 +183,7 @@
          <top>
             <VBox alignment="CENTER" prefHeight="55.0" prefWidth="1030.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="menuLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="330.0" text="Label">
+                  <Label fx:id="menuLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="330.0" styleClass="menu-label-gray-bg" text="Label">
                      <font>
                         <Font size="21.0" />
                      </font>

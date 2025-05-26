@@ -6,11 +6,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.GameMenuController"> <!-- GIẢ SỬ ĐƯỜNG DẪN CONTROLLER NÀY LÀ ĐÚNG -->
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="game-background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.GameMenuController"> <!-- GIẢ SỬ ĐƯỜNG DẪN CONTROLLER NÀY LÀ ĐÚNG -->
    <children>
       <VBox alignment="CENTER" prefHeight="128.0" prefWidth="600.0">
          <children>
-            <Label fx:id="MenuLabel" alignment="CENTER" contentDisplay="CENTER" text="Game Menu">
+            <Label fx:id="MenuLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="menu-label-gray-bg" text="Game Menu">
                <font>
                   <Font name="System Bold" size="25.0" />
                </font>
@@ -26,7 +26,7 @@
             </VBox>
             <VBox fx:id="gameTypeButtonGroup" alignment="CENTER" managed="false" prefHeight="200.0" prefWidth="100.0" spacing="20.0" visible="false">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="Select Game Mode:">
+                  <Label alignment="CENTER" contentDisplay="CENTER" styleClass="card-count-label" text="Select Game Mode:">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -37,7 +37,7 @@
             </VBox>
             <VBox fx:id="playerModeButtonGroup" alignment="CENTER" layoutX="10.0" layoutY="10.0" managed="false" prefHeight="200.0" prefWidth="100.0" spacing="20.0" visible="false">
                <children>
-                  <Label text="Select Opponent:">
+                  <Label styleClass="card-count-label" text="Select Opponent:">
                      <font>
                         <Font size="18.0" />
                      </font>

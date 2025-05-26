@@ -39,8 +39,8 @@ public class App extends Application {
         GameMenuController controller = loader.getController();
         controller.setStage(stage); // Gán stage từ main app
                                     // đúng
-        scene = new Scene(root, 1430, 770); // Kích thước cửa sổ
-        stage.setTitle("TienLen Game");
+        scene = new Scene(root); // Kích thước cửa sổ
+        stage.setTitle("Game Menu");
         stage.setScene(scene);
         stage.show();
     }
