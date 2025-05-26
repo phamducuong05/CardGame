@@ -26,7 +26,7 @@
                         <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </StackPane>
-                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" text="Label">
+                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" styleClass="card-count-label-gray-bg" text="Label">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -108,7 +108,7 @@
                               <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
                            </children>
                         </StackPane>
-                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" text="Label">
+                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" styleClass="card-count-label-gray-bg" text="Label">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -162,7 +162,7 @@
                               <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
                            </children>
                         </StackPane>
-                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="68.0" text="Label">
+                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="68.0" styleClass="card-count-label-gray-bg" text="Label">
                            <font>
                               <Font size="18.0" />
                            </font>

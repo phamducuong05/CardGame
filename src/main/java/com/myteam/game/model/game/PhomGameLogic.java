@@ -166,7 +166,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 cnt++;
             }
         }
-        if (cnt > players.size()) {
+        if (cnt == players.size()) {
             return true;
         }
 
@@ -251,6 +251,10 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
         }
     }
 
+    public PhomPlayer getWinnerPlayer() {
+        return winnerPlayer;
+    }
+
     public PhomGameState getCurrentGameState() {
         List<PhomPlayer> currentPlayers = Collections.unmodifiableList(new ArrayList<>(this.players));
         PhomPlayer activePlayer = this.currentPlayer;
@@ -263,8 +267,6 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 winnerPlayer,
                 cardsOnTable);
     }
-
-
 
     public WestCard getCardsOnTable() {
         return cardsOnTable;

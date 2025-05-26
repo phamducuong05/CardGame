@@ -137,7 +137,8 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
             viewController.updateView(gameLogic.getCurrentGameState());
             checkAndPlayBotTurnIfNeeded();
         } else {
-            PhomPlayer winner = findWinner();
+            gameLogic.determineWinnerByScore();
+            PhomPlayer winner = gameLogic.getWinnerPlayer();
             if (viewController != null) {
                 viewController.showGameOver(winner);
             }
@@ -248,39 +249,6 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
         });
         delay.play();
     }
-
-    /**
-     * Find the winner of the game based on current game state
-     *
-     * @return The winning player
-     */
-    private PhomPlayer findWinner() {
-        PhomGameState gameState = gameLogic.getCurrentGameState();
-
-        // If game state already has a winner, return it
-        if (gameState.getWinner() != null) {
-            return gameState.getWinner();
-        }
-
-        // Otherwise, determine winner based on game rules
-        // This is a simplified implementation
-        PhomPlayer winner = null;
-        int bestScore = Integer.MAX_VALUE;
-
-        for (PhomPlayer player : gameState.getPlayers()) {
-            int unmeldedCards = player.getHand().size();
-
-            // The player with the fewest unmelded cards wins
-            if (unmeldedCards < bestScore) {
-                bestScore = unmeldedCards;
-                winner = player;
-            }
-        }
-
-        return winner;
-    }
-
-    // API methods for ViewController to call
 
     public void playerRequestsDraw(PhomPlayer player) {
         processPlayerMove(player, new PhomPlayerAction.DrawCardAction());
