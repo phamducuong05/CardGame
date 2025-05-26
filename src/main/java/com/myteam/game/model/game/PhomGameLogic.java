@@ -166,7 +166,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 cnt++;
             }
         }
-        if (cnt > players.size()) {
+        if (cnt == players.size()) {
             return true;
         }
 
