@@ -323,9 +323,6 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         // Cập nhật nọc bài
         updateCenterDeckDisplay(logicController.getGameLogic().getDeck().size());
 
-        // Cập nhật trạng thái nút
-        // updateActionButtonsState(gameState); // Tạm thời comment
-
         // Xử lý game over
         if (gameState.isGameOver()) {
             displayGameOver(gameState);
@@ -339,6 +336,45 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
         // setGameActionButtonsVisible(true); // Hiện các nút cơ bản sau khi Deal
         updateAllOpponentCardCountsVisibility(true); // Hiện label đếm bài của đối thủ
+    }
+
+    private void updateMeld(PhomGameState gameState) {
+        if (gameState == null || gameState.getPlayers() == null)
+            return;
+
+        List<PhomPlayer> players = gameState.getPlayers();
+        for (int i = 0; i < players.size(); i++) {
+
+            System.out.println("Updating meld for player " + (i + 1));
+            PhomPlayer player = players.get(i);
+            Pane meldArea;
+            if (i == 0) {
+                meldArea = (HBox) playerEatenCardDisplayAreas[i]; // player1PhomArea
+            } else {
+                meldArea = (FlowPane) playerEatenCardDisplayAreas[i]; // playerXPhomArea
+            }
+            meldArea.getChildren().clear();
+            System.out.println("Ngu1");
+            if (meldArea == null) {
+                System.err.println("Meld area for player " + (i + 1) + " is null.");
+                continue;
+            }
+            if (player.getAllPhoms() == null) {
+                System.err.println("Player " + (i + 1) + " has no melds.");
+                continue;
+            }
+            if (player != null && player.getAllPhoms() != null) {
+                for (List<WestCard> meld : player.getAllPhoms()) {
+                    HBox meldBox = new HBox();
+                    System.out.println("Ngu2");
+                    for (WestCard card : meld) {
+                        ImageView cardView = createDisplayOnlyCardImageView(card);
+                        meldBox.getChildren().add(cardView);
+                    }
+                    meldArea.getChildren().add(meldBox);
+                }
+            }
+        }
     }
 
     private void updateAllPlayerHandsDisplay(List<PhomPlayer> players) {
@@ -703,6 +739,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     }
 
     public void showGameOver(PhomPlayer winnerPlayer) {
+        updateMeld(logicController.getGameLogic().getCurrentGameState());
         String winner = winnerPlayer.getName();
         if (menuLabel != null) {
             menuLabel.setText("Game Over! Người thắng: " + winner);

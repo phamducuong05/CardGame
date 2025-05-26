@@ -16,8 +16,8 @@
    <top>
       <HBox alignment="TOP_CENTER" prefHeight="200.0" spacing="5.0" BorderPane.alignment="TOP_CENTER">
          <children>
-            <FlowPane fx:id="player3PhomArea" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
-            <StackPane fx:id="player3EatArea" alignment="BOTTOM_CENTER" prefHeight="90.0" prefWidth="70.0" />
+            <FlowPane fx:id="player3PhomArea" alignment="CENTER_LEFT" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
+            <StackPane fx:id="player3EatArea" prefHeight="90.0" prefWidth="70.0" />
             <VBox alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
                <children>
                   <StackPane prefHeight="100.0" prefWidth="100.0">
@@ -97,7 +97,7 @@
    <left>
       <VBox alignment="CENTER" prefWidth="210.0" spacing="8.0" BorderPane.alignment="CENTER">
          <children>
-            <FlowPane fx:id="player4PhomArea" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
+            <FlowPane fx:id="player4PhomArea" alignment="TOP_RIGHT" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
             <HBox alignment="CENTER" prefHeight="251.0" prefWidth="165.0">
                <children>
                   <VBox alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
@@ -174,7 +174,7 @@
                   <Insets right="-40.0" />
                </padding>
             </HBox>
-            <FlowPane fx:id="player2PhomArea" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
+            <FlowPane fx:id="player2PhomArea" alignment="BOTTOM_LEFT" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
          </children>
       </VBox>
    </right>
