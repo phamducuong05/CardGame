@@ -25,7 +25,8 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
         this.playerRankings = new ArrayList<>();
     }
 
-    public TienLenMienBacGameLogic(Deck<StandardCard, TienLenPlayer> deck, List<TienLenPlayer> players, int numberOfCards) {
+    public TienLenMienBacGameLogic(Deck<StandardCard, TienLenPlayer> deck, List<TienLenPlayer> players,
+            int numberOfCards) {
         super(deck, players, numberOfCards);
         this.cardsOnTable = new ArrayList<>();
         this.playerRankings = new ArrayList<>();
@@ -66,9 +67,11 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
     public boolean isValidMove(List<StandardCard> selectedCards) {
         if ((cardsOnTable == null || cardsOnTable.isEmpty()) && isFirstTurn) {
             // If no cards on the table, any valid combination can be played
-            return selectedCards.get(0).getRank() == Rank.THREE || selectedCards.get(0).getSuit() == Suit.SPADES;
-        } else if (!isFirstTurn) {
-            return true;
+            return selectedCards.get(0).getRank() == Rank.THREE && selectedCards.get(0).getSuit() == Suit.SPADES;
+        }
+        if (cardsOnTable == null || cardsOnTable.isEmpty()) {
+            // If no cards on the table, any valid combination can be played
+            return isValidCombination(selectedCards);
         }
         if (!isValidCombination(selectedCards))
             return false;
@@ -82,7 +85,7 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
             if (!player.getHand().isEmpty()) {
                 playersWithCards++;
             }
-        } 
+        }
         return playersWithCards <= 3; // Game kết thúc khi chỉ còn 1 người (hoặc 0 người) có bài
     }
 
@@ -102,10 +105,16 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
         } else {
             System.out.println("Invalid card combination!");
         }
-        
+
     }
 
     private boolean isValidCombination(List<StandardCard> selectedCards) {
+        if (selectedCards == null || selectedCards.isEmpty()) {
+            return false;
+        }
+        if (selectedCards.size() == 1) {
+            return true; // Tối đa 4 lá bài
+        }
         if (isPair(selectedCards))
             return true;
         if (isThreeOfKind(selectedCards))
@@ -114,7 +123,7 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
             return true;
         if (isSequence(selectedCards))
             return true;
-        return !selectedCards.isEmpty();
+        return false;
     }
 
     public boolean isSameSuit(StandardCard c1, StandardCard c2) {
