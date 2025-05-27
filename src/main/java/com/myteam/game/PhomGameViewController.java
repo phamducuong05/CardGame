@@ -45,6 +45,16 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     // đủ
 
     // <editor-fold desc="FXML Components">
+
+    @FXML
+    private VBox player1Info;
+    @FXML
+    private VBox player2Info;
+    @FXML
+    private VBox player3Info;
+    @FXML
+    private VBox player4Info;
+
     @FXML
     private Button dealButton;
     @FXML
@@ -123,11 +133,14 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     private Pane[] playerEatenCardDisplayAreas; // Khu vực hiển thị bài đã ĂN của mỗi người (dùng playerPhomAreas)
     private Label[] playerCardCountLabels;
     private Pane[] playerRevealCardAreas;
+    private Pane[] playerInfos; // Khu vực hiển thị thông tin người chơi
 
     // --- INITIALIZATION ---
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadCardBackImage();
+
+        playerInfos = new Pane[] { player1Info, player2Info, player3Info, player4Info };
 
         playerCardAreas = new Pane[] { player1CardArea, player2CardArea, player3CardArea, player4CardArea };
 

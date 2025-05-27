@@ -16,6 +16,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 // import javafx.stage.Stage; // Không cần cho nút Deal
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -48,6 +49,15 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
     // đủ
 
     // <editor-fold desc="FXML Components">
+    @FXML
+    private VBox player1Info;
+    @FXML
+    private VBox player2Info;
+    @FXML
+    private VBox player3Info;
+    @FXML
+    private VBox player4Info;
+
     @FXML
     private Button dealButton;
     @FXML
@@ -97,6 +107,8 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
     private Pane[] playerCardAreas;
     private Label[] playerCardCountLabels;
     private Pane[] playerRevealCardAreas;
+
+    private int numberOfPlayers; // Số lượng người chơi, có thể thay đổi tùy game
 
     // --- INITIALIZATION ---
     @Override

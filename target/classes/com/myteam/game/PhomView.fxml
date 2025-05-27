@@ -18,7 +18,7 @@
          <children>
             <FlowPane fx:id="player3PhomArea" alignment="CENTER_LEFT" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
             <StackPane fx:id="player3EatArea" prefHeight="90.0" prefWidth="70.0" />
-            <VBox alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
+            <VBox fx:id="player3Info" alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
                <children>
                   <StackPane prefHeight="100.0" prefWidth="100.0">
                      <children>
@@ -52,7 +52,7 @@
    <bottom>
       <HBox alignment="BOTTOM_CENTER" prefHeight="200.0" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="CENTER" prefHeight="150.0" prefWidth="90.0">
+            <VBox fx:id="player1Info" alignment="CENTER" prefHeight="150.0" prefWidth="90.0">
                <children>
                   <StackPane prefHeight="100.0" prefWidth="100.0">
                      <children>
@@ -60,7 +60,7 @@
                         <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </StackPane>
-                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="85.0" text="Label">
+                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="85.0" styleClass="card-count-label-gray-bg" text="Label">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -94,7 +94,7 @@
             <FlowPane fx:id="player4PhomArea" alignment="TOP_RIGHT" hgap="-25.0" prefHeight="90.0" prefWidth="210.0" vgap="-60" />
             <HBox alignment="CENTER" prefHeight="251.0" prefWidth="165.0">
                <children>
-                  <VBox alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
+                  <VBox fx:id="player4Info" alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
                      <children>
                         <StackPane prefHeight="100.0" prefWidth="100.0">
                            <children>
@@ -148,7 +148,7 @@
                            </font>
                         </Label>
                      </children></StackPane>
-                  <VBox alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
+                  <VBox fx:id="player2Info" alignment="CENTER" prefHeight="150.0" prefWidth="100.0">
                      <children>
                         <StackPane prefHeight="100.0" prefWidth="100.0">
                            <children>
