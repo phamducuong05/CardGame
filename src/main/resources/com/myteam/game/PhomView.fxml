@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="1430.0" styleClass="game-background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.viewcontroller.PhomGameViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="1430.0" styleClass="game-background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.PhomGameViewController">
    <top>
       <HBox alignment="TOP_CENTER" prefHeight="200.0" spacing="5.0" BorderPane.alignment="TOP_CENTER">
          <children>
@@ -111,7 +111,7 @@
                   </VBox>
                   <StackPane fx:id="player4RevealArea" prefHeight="90.0" prefWidth="70.0">
                      <children>
-                        <HBox fx:id="player4CardArea" alignment="CENTER" prefHeight="90.0" prefWidth="70.0" />
+                        <VBox fx:id="player4CardArea" alignment="CENTER" prefHeight="100.0" prefWidth="100.0" />
                         <Label fx:id="player4Counter" alignment="CENTER" contentDisplay="CENTER" styleClass="card-count-label-gray-bg" textFill="#00d0ff" visible="false">
                            <font>
                               <Font name="System Bold" size="15.0" />
@@ -141,7 +141,7 @@
                <children>
                   <StackPane fx:id="player2RevealArea" prefHeight="90.0" prefWidth="70.0">
                      <children>
-                        <HBox fx:id="player2CardArea" alignment="CENTER" prefHeight="100.0" prefWidth="70.0" />
+                        <VBox fx:id="player2CardArea" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" />
                         <Label fx:id="player2Counter" alignment="CENTER" contentDisplay="CENTER" styleClass="card-count-label-gray-bg" textAlignment="CENTER" textFill="#00d0ff" visible="false">
                            <font>
                               <Font name="System Bold" size="15.0" />

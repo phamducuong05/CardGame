@@ -9,7 +9,7 @@ import com.myteam.game.model.phom.action.PhomPlayerAction;
 
 import javafx.animation.PauseTransition;
 
-import com.myteam.game.viewcontroller.PhomGameViewController;
+import com.myteam.game.PhomGameViewController;
 
 import javafx.util.Duration;
 

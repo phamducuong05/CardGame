@@ -1,6 +1,8 @@
 package com.myteam.game.viewcontroller;
 
 import com.myteam.game.App;
+import com.myteam.game.PhomGameViewController;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -158,6 +160,12 @@ public class GameMenuController implements Initializable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if (currentSelections.gameType.equals("Phom")) {
+            try {
+                initalizePhomHuman();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -233,7 +241,7 @@ public class GameMenuController implements Initializable {
                                                                                            // đúng
         Parent root = fxmlLoader.load();
         TienLenGameViewController uiController = fxmlLoader.getController(); // Lấy instance của TienLenViewController
-
+        uiController.setMainPlayerIndex(0);
         // 2. Tạo các thành phần Logic Game
         // Tạo người chơi (ví dụ)
         List<TienLenPlayer> players = new ArrayList<>();
@@ -273,7 +281,7 @@ public class GameMenuController implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("PhomView.fxml")); // Đảm bảo đường dẫn đúng
         Parent root = fxmlLoader.load();
         PhomGameViewController uiController = fxmlLoader.getController(); // Lấy instance của PhomViewController
-
+        uiController.setMainPlayerIndex(0);
         // 2. Tạo các thành phần Logic Game
         // Tạo người chơi (ví dụ)
         List<PhomPlayer> players = new ArrayList<>();
@@ -281,6 +289,47 @@ public class GameMenuController implements Initializable {
         players.add(new PhomBotPlayer("Bot 1"));
         players.add(new PhomBotPlayer("Bot 2"));
         players.add(new PhomBotPlayer("Bot 3"));
+
+        StandardCardDeck<PhomPlayer> deck = new StandardCardDeck<>(); // Bộ bài
+        // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)
+        int initialCardsPerPlayer = 9;
+        PhomGameLogic gameLogic = new PhomGameLogic(deck, players, initialCardsPerPlayer);
+
+        // 3. Tạo Logic Controller
+        PhomLogicController logicController = new PhomLogicController(gameLogic);
+
+        // 4. Kết nối UI Controller và Logic Controller (RẤT QUAN TRỌNG)
+        // 4.1. UI Controller cần biết về Logic Controller
+        uiController.setLogicController(logicController);
+
+        // 4.2. Logic Controller cần biết về UI Controller (để gọi updateView, etc.)
+        // Điều này yêu cầu PhomViewController phải implement interface
+        // PhomGameViewController
+        // Giả sử PhomViewController đã `implements
+        // com.myteam.game.view.PhomGameViewController`
+        logicController.setViewController(uiController); // DÒNG NÀY QUAN TRỌNG
+        // Đặt stage cho Logic Controller
+        // 5. Thiết lập Scene và hiển thị Stage
+
+        scene = new Scene(root, 1430, 770); // Kích thước cửa sổ
+        stage.setTitle("Phom Game");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    void initalizePhomHuman() throws IOException {
+        // 1. Load FXML và lấy UI Controller
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("PhomHumanView.fxml")); // Đảm bảo đường dẫn đúng
+        Parent root = fxmlLoader.load();
+        PhomGameViewController uiController = fxmlLoader.getController(); // Lấy instance của PhomViewController
+
+        // 2. Tạo các thành phần Logic Game
+        // Tạo người chơi (ví dụ)
+        List<PhomPlayer> players = new ArrayList<>();
+        players.add(new PhomHumanPlayer("Player 1 (You)")); // Người chơi chính
+        players.add(new PhomHumanPlayer("Player 2"));
+        players.add(new PhomHumanPlayer("Player 3"));
+        players.add(new PhomHumanPlayer("Player 4"));
 
         StandardCardDeck<PhomPlayer> deck = new StandardCardDeck<>(); // Bộ bài
         // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)

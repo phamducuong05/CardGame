@@ -24,6 +24,7 @@ import javafx.util.Duration;
 import com.myteam.game.controller.TienLenLogicController;
 import com.myteam.game.model.core.card.StandardCard;
 import com.myteam.game.model.core.enums.Rank;
+import com.myteam.game.model.phom.gamestate.PhomGameState;
 // import com.myteam.game.view.PhomGameViewController; // Interface này sẽ được implement bởi class này
 import com.myteam.game.model.tienlen.gamestate.TienLenGameState;
 import com.myteam.game.model.tienlen.player.TienLenHumanPlayer;
@@ -91,7 +92,7 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
     private final Set<ImageView> selectedImageViews = new HashSet<>();
     private final double CARD_POP_UP_TRANSLATE_Y = -20.0;
     private final double CARD_WIDTH = 75;
-    private final int MAIN_PLAYER_INDEX = 0; // Người chơi chính (index 0)
+    private int MAIN_PLAYER_INDEX = 10; // Người chơi chính (index 0)
 
     private Pane[] playerCardAreas;
     private Label[] playerCardCountLabels;
@@ -302,7 +303,16 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
             if (players.get(i) instanceof TienLenHumanPlayer) { // Người chơi chính
                 if (player != null && player.getHand() != null) {
                     for (StandardCard card : player.getHand()) {
-                        ImageView cardView = createHandCardImageView(card);
+                        TienLenGameState gameState = logicController.getGameLogic().getCurrentGameState();
+                        ImageView cardView;
+                        if (gameState.getPlayers().indexOf(gameState.getCurrentPlayer()) != i
+                                && i != MAIN_PLAYER_INDEX) {
+                            cardView = new ImageView(cardBackImage); // Chỉ hiển thị bài
+                            cardView.setPreserveRatio(true);
+                            cardView.setFitWidth(CARD_WIDTH);
+                        } else {
+                            cardView = createHandCardImageView(card);
+                        }
                         if (cardView != null)
                             cardArea.getChildren().add(cardView);
                     }
@@ -558,6 +568,11 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         logicController.executeAfterDelay(Duration.seconds(10), () -> {
             cardArea.getChildren().remove(OpponentCardsReveal);
         });
+    }
+
+    public void setMainPlayerIndex(int mainPlayerIndex) {
+        this.MAIN_PLAYER_INDEX = mainPlayerIndex;
+        System.out.println("Main player index set to: " + MAIN_PLAYER_INDEX);
     }
 
     private void showWinnerPopup(String winnerName) {

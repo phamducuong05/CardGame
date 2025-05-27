@@ -1,4 +1,4 @@
-package com.myteam.game.viewcontroller; // Giả sử PhomViewController nằm trong package này
+package com.myteam.game; // Giả sử PhomViewController nằm trong package này
 
 // Imports từ JavaFX
 import javafx.event.ActionEvent;
@@ -15,6 +15,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 // import javafx.stage.Stage; // Không cần cho nút Deal
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -65,11 +66,11 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     @FXML
     private HBox player1CardArea;
     @FXML
-    private HBox player2CardArea;
+    private VBox player2CardArea;
     @FXML
     private HBox player3CardArea;
     @FXML
-    private HBox player4CardArea;
+    private VBox player4CardArea;
 
     @FXML
     private Label player2Counter;
@@ -115,7 +116,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     private final Set<ImageView> selectedImageViews = new HashSet<>();
     private final double CARD_POP_UP_TRANSLATE_Y = -20.0;
     private final double CARD_WIDTH = 75;
-    private final int MAIN_PLAYER_INDEX = 0; // Người chơi chính (index 0)
+    private int MAIN_PLAYER_INDEX = 10; // Người chơi chính (index 0)
 
     private Pane[] playerCardAreas;
     private Pane[] playerEatAreas; // Khu vực hiển thị bài đã đánh của mỗi người
@@ -392,7 +393,16 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
             if (players.get(i) instanceof PhomHumanPlayer) { // Người chơi chính
                 if (player != null && player.getHand() != null) {
                     for (StandardCard card : player.getHand()) {
-                        ImageView cardView = createHandCardImageView(card);
+                        PhomGameState gameState = logicController.getGameLogic().getCurrentGameState();
+                        ImageView cardView;
+                        if (gameState.getPlayers().indexOf(gameState.getCurrentPlayer()) != i
+                                && i != MAIN_PLAYER_INDEX) {
+                            cardView = new ImageView(cardBackImage); // Chỉ hiển thị bài
+                            cardView.setPreserveRatio(true);
+                            cardView.setFitWidth(CARD_WIDTH);
+                        } else {
+                            cardView = createHandCardImageView(card);
+                        }
                         if (cardView != null)
                             cardArea.getChildren().add(cardView);
                     }
@@ -679,6 +689,11 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
 
     public void showInvalidMoveMessage(String message) {
         showUIMessage("Không hợp lệ: " + message);
+    }
+
+    public void setMainPlayerIndex(int mainPlayerIndex) {
+        this.MAIN_PLAYER_INDEX = mainPlayerIndex;
+        System.out.println("Main player index set to: " + MAIN_PLAYER_INDEX);
     }
 
     public void showWinner(PhomPlayer winner, PhomGameState gameState) {
