@@ -24,12 +24,12 @@
    <top>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="1430.0" BorderPane.alignment="CENTER">
          <children>
+            <HBox fx:id="player3CardArea" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="-50" />
             <Label alignment="CENTER" prefHeight="24.0" prefWidth="68.0" styleClass="card-count-label" text="Player 3">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
-            <HBox fx:id="player3CardArea" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="-50" />
          </children>
       </VBox>
    </top>
@@ -48,7 +48,7 @@
             </StackPane>
          </center>
          <bottom>
-            <HBox alignment="CENTER" prefHeight="24.0" prefWidth="1030.0" spacing="20.0" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER_LEFT" prefHeight="24.0" prefWidth="1030.0" spacing="20.0" BorderPane.alignment="CENTER">
                <children>
                   <Button fx:id="playButton" mnemonicParsing="false" onAction="#handlePlayButton" text="Play">
                      <font>
@@ -84,12 +84,12 @@
    <left>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
+            <HBox fx:id="player4CardArea" alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="-50" />
             <Label alignment="CENTER" styleClass="card-count-label" text="Player 3">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
-            <HBox fx:id="player4CardArea" alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="-50" />
          </children>
       </VBox>
    </left>
