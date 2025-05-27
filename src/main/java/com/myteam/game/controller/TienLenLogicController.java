@@ -1,15 +1,15 @@
 package com.myteam.game.controller;
 
-import com.myteam.game.model.core.card.WestCard;
+import com.myteam.game.model.core.card.StandardCard;
 import com.myteam.game.model.game.TienLenMienBacGameLogic;
-import com.myteam.game.model.tienlen.TienLenGameState;
-import com.myteam.game.model.tienlen.TienLenPlayer;
+import com.myteam.game.model.tienlen.gamestate.TienLenGameState;
+import com.myteam.game.model.tienlen.player.TienLenPlayer;
 
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
-import com.myteam.game.model.tienlen.TienLenBotPlayer;
-import com.myteam.game.TienLenGameViewController;
+import com.myteam.game.model.tienlen.player.TienLenBotPlayer;
+import com.myteam.game.viewcontroller.TienLenGameViewController;
 
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Set;
  * LogicController implementation for TienLen game
  * Handles game logic and coordinates between model and view
  */
-public class TienLenLogicController extends LogicController<WestCard, TienLenPlayer, TienLenMienBacGameLogic> {
+public class TienLenLogicController extends LogicController<StandardCard, TienLenPlayer, TienLenMienBacGameLogic> {
     private Set<TienLenPlayer> playersSkippedThisRound = new HashSet<>();
     private TienLenPlayer lastPlayerWhoPlayedCards = null; // Người cuối cùng đánh bài
     // Reference to the view controller (without JavaFX dependencies)
@@ -44,7 +44,7 @@ public class TienLenLogicController extends LogicController<WestCard, TienLenPla
         // In TienLen, the main move is playing cards
         if (move instanceof List) {
             @SuppressWarnings("unchecked")
-            List<WestCard> cardsToPlay = (List<WestCard>) move;
+            List<StandardCard> cardsToPlay = (List<StandardCard>) move;
 
             // Ensure player owns all cards
             if (!player.getHand().containsAll(cardsToPlay)) {
@@ -253,7 +253,7 @@ public class TienLenLogicController extends LogicController<WestCard, TienLenPla
                 if (!isGameRunning())
                     return; // Kiểm tra lại trước khi bot hành động (quan trọng)
 
-                List<WestCard> botMove = bot.decideCardsToPlay(gameState);
+                List<StandardCard> botMove = bot.decideCardsToPlay(gameState);
 
                 if (botMove != null && !botMove.isEmpty()) {
                     System.out.println(bot.getName() + " decides to play: " + botMove);
@@ -296,7 +296,7 @@ public class TienLenLogicController extends LogicController<WestCard, TienLenPla
      * @param player The player playing the cards
      * @param cards  The cards to play
      */
-    public void playerRequestsPlayCards(TienLenPlayer player, List<WestCard> cards) {
+    public void playerRequestsPlayCards(TienLenPlayer player, List<StandardCard> cards) {
         processPlayerMove(player, cards);
     }
 

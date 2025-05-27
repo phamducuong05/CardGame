@@ -1,25 +1,20 @@
 package com.myteam.game.model.game;
 
-import com.myteam.game.model.core.card.Card;
-import com.myteam.game.model.core.card.WestCard;
-import com.myteam.game.model.core.card.WestCardComparator;
+import com.myteam.game.model.core.card.StandardCard;
+import com.myteam.game.model.core.card.StandardCardComparator;
 import com.myteam.game.model.core.deck.Deck;
-import com.myteam.game.model.core.deck.WestCardDeck;
 import com.myteam.game.model.core.enums.Rank;
 import com.myteam.game.model.core.enums.Suit;
-import com.myteam.game.model.phom.PhomGameState;
-import com.myteam.game.model.phom.PhomPlayer;
-import com.myteam.game.model.tienlen.TienLenBotPlayer;
-import com.myteam.game.model.tienlen.TienLenGameState;
-import com.myteam.game.model.tienlen.TienLenPlayer;
+import com.myteam.game.model.tienlen.gamestate.TienLenGameState;
+import com.myteam.game.model.tienlen.player.TienLenPlayer;
 import java.util.ArrayList;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
-    private List<WestCard> cardsOnTable;
+public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
+    private List<StandardCard> cardsOnTable;
     private List<TienLenPlayer> playerRankings;
     private int skipCount = 0;
     private boolean isFirstTurn = true;
@@ -30,7 +25,7 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         this.playerRankings = new ArrayList<>();
     }
 
-    public TienLenMienBacGameLogic(Deck<WestCard, TienLenPlayer> deck, List<TienLenPlayer> players, int numberOfCards) {
+    public TienLenMienBacGameLogic(Deck<StandardCard, TienLenPlayer> deck, List<TienLenPlayer> players, int numberOfCards) {
         super(deck, players, numberOfCards);
         this.cardsOnTable = new ArrayList<>();
         this.playerRankings = new ArrayList<>();
@@ -58,7 +53,7 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
     @Override
     public TienLenPlayer getFirstPlayer(List<TienLenPlayer> players) {
         for (TienLenPlayer player : players) {
-            for (WestCard card : player.getHand()) {
+            for (StandardCard card : player.getHand()) {
                 if (card.getRank() == Rank.THREE && card.getSuit() == Suit.SPADES) {
                     return player;
                 }
@@ -68,7 +63,7 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
     }
 
     @Override
-    public boolean isValidMove(List<WestCard> selectedCards) {
+    public boolean isValidMove(List<StandardCard> selectedCards) {
         if ((cardsOnTable == null || cardsOnTable.isEmpty()) && isFirstTurn) {
             // If no cards on the table, any valid combination can be played
             return selectedCards.get(0).getRank() == Rank.THREE || selectedCards.get(0).getSuit() == Suit.SPADES;
@@ -97,7 +92,7 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         currentPlayer = getPlayers().get((getPlayers().indexOf(currentPlayer) + 1) % getPlayers().size());
     }
 
-    public void playCards(List<WestCard> selectedCards) {
+    public void playCards(List<StandardCard> selectedCards) {
         if (isValidMove(selectedCards)) {
             currentPlayer.getHand().removeAll(selectedCards);
             this.cardsOnTable = new ArrayList<>(selectedCards);
@@ -110,7 +105,7 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         
     }
 
-    private boolean isValidCombination(List<WestCard> selectedCards) {
+    private boolean isValidCombination(List<StandardCard> selectedCards) {
         if (isPair(selectedCards))
             return true;
         if (isThreeOfKind(selectedCards))
@@ -122,11 +117,11 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         return !selectedCards.isEmpty();
     }
 
-    public boolean isSameSuit(WestCard c1, WestCard c2) {
+    public boolean isSameSuit(StandardCard c1, StandardCard c2) {
         return c1.getSuit() == c2.getSuit();
     }
 
-    public boolean isSameColor(WestCard c1, WestCard c2) {
+    public boolean isSameColor(StandardCard c1, StandardCard c2) {
         boolean allRed = (c1.getSuit() == Suit.HEARTS && c2.getSuit() == Suit.DIAMONDS)
                 || (c1.getSuit() == Suit.DIAMONDS && c2.getSuit() == Suit.HEARTS);
         boolean allBlack = (c1.getSuit() == Suit.CLUBS && c2.getSuit() == Suit.SPADES)
@@ -134,28 +129,28 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         return allRed || allBlack;
     }
 
-    public boolean isPair(List<WestCard> selectedCards) {
+    public boolean isPair(List<StandardCard> selectedCards) {
         return (selectedCards.size() == 2 && selectedCards.get(0).getRank() == selectedCards.get(1).getRank())
                 && isSameColor(selectedCards.get(0), selectedCards.get(1));
     }
 
-    public boolean isThreeOfKind(List<WestCard> selectedCards) {
+    public boolean isThreeOfKind(List<StandardCard> selectedCards) {
         return selectedCards.size() == 3
                 && selectedCards.get(0).getRank() == selectedCards.get(1).getRank()
                 && selectedCards.get(1).getRank() == selectedCards.get(2).getRank();
     }
 
-    public boolean isFourOfKind(List<WestCard> selectedCards) {
+    public boolean isFourOfKind(List<StandardCard> selectedCards) {
         return selectedCards.size() == 4
                 && selectedCards.get(0).getRank() == selectedCards.get(1).getRank()
                 && selectedCards.get(1).getRank() == selectedCards.get(2).getRank()
                 && selectedCards.get(2).getRank() == selectedCards.get(3).getRank();
     }
 
-    public boolean isSequence(List<WestCard> selectedCards) {
+    public boolean isSequence(List<StandardCard> selectedCards) {
         if (selectedCards.size() < 3)
             return false;
-        selectedCards.sort(Comparator.comparing(WestCard::getRank).thenComparing(WestCard::getSuit));
+        selectedCards.sort(Comparator.comparing(StandardCard::getRank).thenComparing(StandardCard::getSuit));
         for (int i = 1; i < selectedCards.size(); i++) {
             if ((selectedCards.get(i).getRank().getValue() != selectedCards.get(i - 1).getRank().getValue() + 1)
                     || (selectedCards.get(i).getSuit() != selectedCards.get(i - 1).getSuit()))
@@ -164,9 +159,9 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         return true;
     }
 
-    public boolean isCounter(List<WestCard> UcardsOnTable, List<WestCard> UselectedCards) {
-        List<WestCard> cardsOnTable = new ArrayList<>(UcardsOnTable);
-        List<WestCard> selectedCards = new ArrayList<>(UselectedCards);
+    public boolean isCounter(List<StandardCard> UcardsOnTable, List<StandardCard> UselectedCards) {
+        List<StandardCard> cardsOnTable = new ArrayList<>(UcardsOnTable);
+        List<StandardCard> selectedCards = new ArrayList<>(UselectedCards);
 
         boolean tableIsPair = isPair(cardsOnTable);
         boolean selectedIsPair = isPair(selectedCards);
@@ -177,8 +172,8 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
         boolean tableIsSequence = isSequence(cardsOnTable);
         boolean selectedIsSequence = isSequence(selectedCards);
 
-        cardsOnTable.sort(new WestCardComparator()); // Hoặc comparator của bạn
-        selectedCards.sort(new WestCardComparator());
+        cardsOnTable.sort(new StandardCardComparator()); // Hoặc comparator của bạn
+        selectedCards.sort(new StandardCardComparator());
         // special counter only for cards with rank 2
         if (cardsOnTable.size() == 1 && cardsOnTable.getFirst().getRank() == Rank.TWO) {
             if (selectedCards.size() == 1 && selectedCards.getFirst().getRank() == Rank.TWO
@@ -222,8 +217,8 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
                 return false;
         }
 
-        WestCard highestTableCard = cardsOnTable.getLast();
-        WestCard highestSelectedCard = selectedCards.getLast();
+        StandardCard highestTableCard = cardsOnTable.getLast();
+        StandardCard highestSelectedCard = selectedCards.getLast();
 
         int rankComparison = highestSelectedCard.getRank().compareTo(highestTableCard.getRank());
         if (rankComparison > 0) {
@@ -237,7 +232,7 @@ public class TienLenMienBacGameLogic extends Game<WestCard, TienLenPlayer> {
     public TienLenGameState getCurrentGameState() {
         List<TienLenPlayer> currentPlayers = Collections.unmodifiableList(new ArrayList<>(this.players));
         TienLenPlayer activePlayer = this.currentPlayer;
-        List<WestCard> cardsOnTable = new ArrayList<>(this.cardsOnTable);
+        List<StandardCard> cardsOnTable = new ArrayList<>(this.cardsOnTable);
         return new TienLenGameState(
                 currentPlayers,
                 activePlayer,

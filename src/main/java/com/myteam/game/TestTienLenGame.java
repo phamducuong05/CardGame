@@ -1,9 +1,9 @@
 package com.myteam.game;
 
-import com.myteam.game.model.core.deck.WestCardDeck;
+import com.myteam.game.model.core.deck.StandardCardDeck;
 import com.myteam.game.model.game.TienLenMienBacGameLogic;
-import com.myteam.game.model.tienlen.TienLenBotPlayer;
-import com.myteam.game.model.tienlen.TienLenPlayer;
+import com.myteam.game.model.tienlen.player.TienLenBotPlayer;
+import com.myteam.game.model.tienlen.player.TienLenPlayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class TestTienLenGame {
         List<TienLenPlayer> players = new ArrayList<>(Arrays.asList(bot1, bot2, bot3, bot4));
 
         // Khởi tạo logic cho game
-        WestCardDeck<TienLenPlayer> deck = new WestCardDeck<>();
+        StandardCardDeck<TienLenPlayer> deck = new StandardCardDeck<>();
 
         TienLenMienBacGameLogic gameLogic = new TienLenMienBacGameLogic(deck, players, 13);
 

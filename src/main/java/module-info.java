@@ -7,4 +7,6 @@ module com.myteam.game {
     opens com.myteam.game to javafx.fxml;
 
     exports com.myteam.game;
+    exports com.myteam.game.viewcontroller;
+    opens com.myteam.game.viewcontroller to javafx.fxml;
 }

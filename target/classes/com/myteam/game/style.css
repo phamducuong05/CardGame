@@ -1,0 +1,47 @@
+.card-count-label {
+    -fx-background-color: white; /* Nền trắng */
+    -fx-text-fill: black;       /* Chữ màu đen */
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 6px;      /* Đệm ngắn gọn hơn: (top/bottom) (left/right) */
+    -fx-background-radius: 5;
+    -fx-border-color: #CCCCCC;  /* Màu xám nhạt cho viền */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5;
+}
+
+.card-count-label-gray-bg { /* Một class khác nếu bạn muốn nền xám */
+    -fx-background-color: #E0E0E0; /* Màu xám nhạt */
+    -fx-text-fill: black;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 6px;
+    -fx-background-radius: 5;
+}
+
+.menu-label-gray-bg { /* Một class khác nếu bạn muốn nền xám */
+    -fx-background-color: #E0E0E0; /* Màu xám nhạt */
+    -fx-text-fill: black;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 6px;
+    -fx-background-radius: 5;
+}
+
+.game-background {
+    /* Đường dẫn từ gốc classpath (resources) */
+    -fx-background-image: url('/background.jpg');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    
+}
+
+.gamemenu-background {
+    /* Đường dẫn từ gốc classpath (resources) */
+    -fx-background-image: url('background.jpg');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    
+}

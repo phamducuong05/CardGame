@@ -7,22 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.myteam.game.controller.PhomLogicController;
-import com.myteam.game.controller.PhomViewController;
-import com.myteam.game.PhomGameViewController;
-import com.myteam.game.model.core.deck.WestCardDeck;
-import com.myteam.game.model.game.PhomGameLogic;
-import com.myteam.game.model.phom.PhomBotPlayer;
-import com.myteam.game.model.phom.PhomHumanPlayer;
-import com.myteam.game.model.phom.PhomPlayer;
-import com.myteam.game.model.tienlen.TienLenBotPlayer;
-import com.myteam.game.model.tienlen.TienLenHumanPlayer;
-import com.myteam.game.model.tienlen.TienLenPlayer;
-import com.myteam.game.controller.TienLenLogicController;
-import com.myteam.game.model.game.TienLenMienBacGameLogic;
 
 public class App1 extends Application {
     private static Stage stage; // Thêm biến stage để quản lý cửa sổ

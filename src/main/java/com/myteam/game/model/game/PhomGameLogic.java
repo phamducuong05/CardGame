@@ -1,31 +1,29 @@
 package com.myteam.game.model.game;
 
-import com.myteam.game.model.core.card.WestCard;
-import com.myteam.game.model.phom.PhomPlayer;
-import com.myteam.game.model.phom.PhomBotPlayer;
+import com.myteam.game.model.core.card.StandardCard;
+import com.myteam.game.model.phom.player.PhomPlayer;
+import com.myteam.game.model.phom.player.PhomBotPlayer;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import com.myteam.game.model.core.deck.Deck;
-import com.myteam.game.model.core.enums.Suit;
-import com.myteam.game.model.core.enums.Rank;
-import com.myteam.game.model.phom.PhomGameState;
+import com.myteam.game.model.phom.gamestate.PhomGameState;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
+public class PhomGameLogic extends Game<StandardCard, PhomPlayer> {
     private PhomGameState currentGameState;
-    private WestCard cardsOnTable;
+    private StandardCard cardsOnTable;
     private PhomPlayer winnerPlayer;
-    private List<List<WestCard>> MeldedCards; // Phom đã hạ
+    private List<List<StandardCard>> MeldedCards; // Phom đã hạ
 
     public PhomGameLogic() {
         this.MeldedCards = new ArrayList<>();
-        // Và các trường khác nếu cần
+        winnerPlayer = null;
+        cardsOnTable = null;
     }
 
-    public PhomGameLogic(Deck<WestCard, PhomPlayer> deck, List<PhomPlayer> players, int numberOfCards) {
+    public PhomGameLogic(Deck<StandardCard, PhomPlayer> deck, List<PhomPlayer> players, int numberOfCards) {
         super(deck, players, numberOfCards);
         cardsOnTable = null;
         this.MeldedCards = new ArrayList<>(); // KHỞI TẠO MeldedCards Ở ĐÂY!
@@ -60,51 +58,15 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
     public void botDiscardCard() {
         PhomBotPlayer botPlayer = (PhomBotPlayer) currentPlayer;
-        WestCard cardRemove = botPlayer.decideDiscard();
+        StandardCard cardRemove = botPlayer.decideDiscard();
         botPlayer.getHand().remove(cardRemove);
         botPlayer.addDiscardCards(cardRemove);
         cardsOnTable = cardRemove;
         currentPlayer.setNumOfTurn(currentPlayer.getNumOfTurn() + 1);
     }
 
-    public void botSendCard() {
-        PhomBotPlayer botPlayer = (PhomBotPlayer) currentPlayer;
-        Map<WestCard, List<WestCard>> cardsToSend = botPlayer.decideSends(this.getCurrentGameState());
 
-        if (!cardsToSend.isEmpty()) {
-            // Lặp qua các lá bài mà bot muốn gửi
-            for (Map.Entry<WestCard, List<WestCard>> entry : cardsToSend.entrySet()) {
-                WestCard cardToSend = entry.getKey();
-                List<WestCard> meldToSendTo = entry.getValue(); // Phỏm mà bot muốn gửi vào
-
-                // Xác định người chơi sở hữu phỏm này
-                PhomPlayer recipient = null;
-                for (PhomPlayer player : this.getPlayers()) {
-                    if (player != currentPlayer && player.getAllPhoms().contains(meldToSendTo)) {
-                        recipient = player;
-                        break;
-                    }
-                }
-
-                if (recipient != null) {
-                    sendCardToMeld(currentPlayer, recipient, cardToSend, meldToSendTo);
-                    break; // Bot có thể quyết định chỉ gửi một lá mỗi lượt gửi bài
-                } else {
-                    System.out.println("Fail to send");
-                }
-            }
-        } else {
-            return;
-        }
-    }
-
-    public void sendCardToMeld(PhomPlayer sender, PhomPlayer recipient, WestCard cardToSend,
-            List<WestCard> meldToSendTo) {
-        sender.getHand().remove(cardToSend);
-        meldToSendTo.add(cardToSend);
-    }
-
-    public void humanDiscardCard(WestCard card) {
+    public void humanDiscardCard(StandardCard card) {
         currentPlayer.addDiscardCards(card);
         currentPlayer.getHand().remove(card);
         cardsOnTable = card;
@@ -113,12 +75,12 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
     public void playerDrawCard() {
         if (!deck.isEmpty()) {
-            WestCard card = deck.drawCard();
+            StandardCard card = deck.drawCard();
             currentPlayer.receiveCard(card);
         }
     }
 
-    public void playerEatCard(WestCard cardToEatArgument) { // Đổi tên tham số để tránh nhầm lẫn với this.cardsOnTable
+    public void playerEatCard(StandardCard cardToEatArgument) {
         if (currentPlayer == null || cardToEatArgument == null || this.cardsOnTable == null
                 || !this.cardsOnTable.equals(cardToEatArgument)) {
             System.err.println(
@@ -131,12 +93,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
         currentPlayer.getEatenCards().add(cardToEatArgument);
 
-        // 3. Xóa lá bài khỏi bàn chơi (rất quan trọng!)
         this.cardsOnTable = null;
-
-        // Không cần thay đổi numOfTurn ở đây, nó tăng sau khi đánh bài.
-        // Không cần cố gắng xóa khỏi discard pile của người chơi trước nếu
-        // this.cardsOnTable quản lý lá bài active.
 
         PhomPlayer previousPlayer = getPlayers()
                 .get((getPlayers().indexOf(currentPlayer) - 1 + getPlayers().size()) % getPlayers().size());
@@ -144,17 +101,15 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
     }
 
     @Override
-    public boolean isValidMove(List<WestCard> cards) {
+    public boolean isValidMove(List<StandardCard> cards) {
         return cards.size() == 1;
     }
 
     @Override
     public boolean endGame() {
-        // end game khi hết bài bốc
         if (deck.isEmpty()) {
             return true;
         }
-        // end game khi có người ù
         for (PhomPlayer player : players) {
             if (player.calculateScore() == 0) {
                 winnerPlayer = player;
@@ -175,7 +130,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
     }
 
     public void playerMeldCard() {
-        for (List<WestCard> meld : currentPlayer.findCombinations()) {
+        for (List<StandardCard> meld : currentPlayer.findCombinations()) {
             currentPlayer.getHand().removeAll(meld);
             currentPlayer.getAllPhoms().add(meld);
             this.MeldedCards.add(meld);
@@ -188,23 +143,19 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
         currentPlayer = getPlayers().get((getPlayers().indexOf(currentPlayer) + 1) % getPlayers().size());
     }
 
-    public boolean canFormPhom(PhomPlayer player, WestCard card) {
-        List<WestCard> originalHand = new ArrayList<>(player.getHand());
-        List<WestCard> originalEatenCards = new ArrayList<>(player.getEatenCards());
+    public boolean canFormPhom(PhomPlayer player, StandardCard card) {
+        List<StandardCard> originalHand = new ArrayList<>(player.getHand());
+        List<StandardCard> originalEatenCards = new ArrayList<>(player.getEatenCards());
 
-        // 2. Thêm bài tạm thời và tìm phỏm mới
         player.receiveCard(card);
-        List<List<WestCard>> newPhoms = player.findCombinations();
+        List<List<StandardCard>> newPhoms = player.findCombinations();
 
-        // 3. Kiểm tra xem có lá bài nào thuộc nhiều phỏm không
         boolean isValid = true;
-        Map<WestCard, Integer> cardUsageMap = new HashMap<>();
+        Map<StandardCard, Integer> cardUsageMap = new HashMap<>();
 
-        // Đếm số lần mỗi lá bài xuất hiện trong các phỏm
-        for (List<WestCard> phom : newPhoms) {
-            for (WestCard c : phom) {
+        for (List<StandardCard> phom : newPhoms) {
+            for (StandardCard c : phom) {
                 cardUsageMap.put(c, cardUsageMap.getOrDefault(c, 0) + 1);
-                // Nếu có lá bài xuất hiện trong >= 2 phỏm → Không hợp lệ
                 if (cardUsageMap.get(c) >= 2) {
                     isValid = false;
                     break;
@@ -213,23 +164,19 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
             if (!isValid) break;
         }
 
-        // 4. Khôi phục trạng thái ban đầu
         player.getHand().clear();
         player.getHand().addAll(originalHand);
         player.getEatenCards().clear();
         player.getEatenCards().addAll(originalEatenCards);
 
-        // 5. Điều kiện hợp lệ:
-        // - Lá bài mới (card) phải thuộc đúng 1 phỏm
-        // - Không có lá bài nào thuộc nhiều phỏm
         return isValid 
             && cardUsageMap.getOrDefault(card, 0) == 1;
     }
 
-    public boolean isValidCombination(List<WestCard> cards) {
+    public boolean isValidCombination(List<StandardCard> cards) {
         if (cards.getFirst().getSuit() != cards.getLast().getSuit()) {
             int tmp = cards.getFirst().getRank().getValue();
-            for (WestCard card : cards) {
+            for (StandardCard card : cards) {
                 if (card.getRank().getValue() != tmp) {
                     return false;
                 }
@@ -255,7 +202,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
         System.out.println("Điểm số cuối cùng:");
         for (PhomPlayer player : players) {
             int score = 0;
-            for (WestCard card : player.getHand()) {
+            for (StandardCard card : player.getHand()) {
                 score += card.getRank().getValue();
             }
             System.out.println("- " + player.getName() + ": " + score + " điểm");
@@ -290,7 +237,7 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
     public PhomGameState getCurrentGameState() {
         List<PhomPlayer> currentPlayers = Collections.unmodifiableList(new ArrayList<>(this.players));
         PhomPlayer activePlayer = this.currentPlayer;
-        List<List<WestCard>> currentMeldedCards = Collections.unmodifiableList(new ArrayList<>(MeldedCards));
+        List<List<StandardCard>> currentMeldedCards = Collections.unmodifiableList(new ArrayList<>(MeldedCards));
         return new PhomGameState(
                 currentPlayers,
                 activePlayer,
@@ -300,12 +247,9 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 cardsOnTable);
     }
 
-    public WestCard getCardsOnTable() {
+    public StandardCard getCardsOnTable() {
         return cardsOnTable;
     }
 
-    public boolean isSendingPhase() {
-        return !MeldedCards.isEmpty();
-    }
 
 }
