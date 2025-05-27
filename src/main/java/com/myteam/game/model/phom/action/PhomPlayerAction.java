@@ -5,7 +5,6 @@ import com.myteam.game.model.phom.player.PhomPlayer;
 
 import java.util.List;
 
-
 public class PhomPlayerAction {
 
     public static class DrawCardAction {
@@ -16,11 +15,22 @@ public class PhomPlayerAction {
         private final StandardCard card;
 
         public EatCardAction(StandardCard card) {
-            this.card = card;
+            try {
+                if (card == null) {
+                    throw new IllegalArgumentException("Card cannot be null");
+                }
+                this.card = card;
+            } catch (Exception e) {
+                throw new RuntimeException("Error initializing EatCardAction", e);
+            }
         }
 
         public StandardCard getCard() {
-            return card;
+            try {
+                return card;
+            } catch (Exception e) {
+                throw new RuntimeException("Error retrieving card from EatCardAction", e);
+            }
         }
     }
 
@@ -28,14 +38,22 @@ public class PhomPlayerAction {
         private final StandardCard card;
 
         public DiscardCardAction(StandardCard card) {
-            this.card = card;
+            try {
+                if (card == null) {
+                    throw new IllegalArgumentException("Card cannot be null");
+                }
+                this.card = card;
+            } catch (Exception e) {
+                throw new RuntimeException("Error initializing DiscardCardAction", e);
+            }
         }
 
         public StandardCard getCard() {
-            return card;
+            try {
+                return card;
+            } catch (Exception e) {
+                throw new RuntimeException("Error retrieving card from DiscardCardAction", e);
+            }
         }
     }
-
-
-
 }

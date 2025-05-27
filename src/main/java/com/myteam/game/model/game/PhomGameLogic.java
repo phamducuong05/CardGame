@@ -15,7 +15,7 @@ public class PhomGameLogic extends Game<StandardCard, PhomPlayer> {
     private PhomGameState currentGameState;
     private StandardCard cardsOnTable;
     private PhomPlayer winnerPlayer;
-    private List<List<StandardCard>> MeldedCards; // Phom đã hạ
+    private List<List<StandardCard>> MeldedCards;
 
     public PhomGameLogic() {
         this.MeldedCards = new ArrayList<>();
@@ -26,29 +26,30 @@ public class PhomGameLogic extends Game<StandardCard, PhomPlayer> {
     public PhomGameLogic(Deck<StandardCard, PhomPlayer> deck, List<PhomPlayer> players, int numberOfCards) {
         super(deck, players, numberOfCards);
         cardsOnTable = null;
-        this.MeldedCards = new ArrayList<>(); // KHỞI TẠO MeldedCards Ở ĐÂY!
+        this.MeldedCards = new ArrayList<>();
         this.winnerPlayer = null;
     }
 
     @Override
     public void startGame() {
-        if (deck == null) {
-            System.err.println("Lỗi: Bộ bài (deck) chưa được khởi tạo!");
-            return;
+        try {
+            if (deck == null) {
+                throw new IllegalStateException("Lỗi: Bộ bài (deck) chưa được khởi tạo!");
+            }
+            deck.shuffle();
+            deck.dealCards(players, numberOfCards);
+            players.getFirst().receiveCard(deck.drawCard());
+            currentPlayer = getFirstPlayer(players);
+            if (players == null || players.isEmpty()) {
+                throw new IllegalStateException("Lỗi: Không có người chơi nào!");
+            }
+            if (numberOfCards <= 0) {
+                throw new IllegalArgumentException("Lỗi: Số lá bài chia không hợp lệ!");
+            }
+            System.out.println("Game started! Dealing... " + numberOfCards + " cards to " + players.size() + " players.");
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
-        deck.shuffle();
-        deck.dealCards(players, numberOfCards);
-        players.getFirst().receiveCard(deck.drawCard());
-        currentPlayer = getFirstPlayer(players);
-        if (players == null || players.isEmpty()) {
-            System.err.println("Lỗi: Không có người chơi nào!");
-            return;
-        }
-        if (numberOfCards <= 0) {
-            System.err.println("Lỗi: Số lá bài chia không hợp lệ!");
-            return;
-        }
-        System.out.println("Game started! Dealing... " + numberOfCards + " cards to " + players.size() + " players.");
     }
 
     @Override
@@ -57,47 +58,60 @@ public class PhomGameLogic extends Game<StandardCard, PhomPlayer> {
     }
 
     public void botDiscardCard() {
-        PhomBotPlayer botPlayer = (PhomBotPlayer) currentPlayer;
-        StandardCard cardRemove = botPlayer.decideDiscard();
-        botPlayer.getHand().remove(cardRemove);
-        botPlayer.addDiscardCards(cardRemove);
-        cardsOnTable = cardRemove;
-        currentPlayer.setNumOfTurn(currentPlayer.getNumOfTurn() + 1);
+        try {
+            PhomBotPlayer botPlayer = (PhomBotPlayer) currentPlayer;
+            StandardCard cardRemove = botPlayer.decideDiscard();
+            botPlayer.getHand().remove(cardRemove);
+            botPlayer.addDiscardCards(cardRemove);
+            cardsOnTable = cardRemove;
+            currentPlayer.setNumOfTurn(currentPlayer.getNumOfTurn() + 1);
+        } catch (Exception e) {
+            System.err.println("botDiscardCard error: " + e.getMessage());
+        }
     }
 
-
     public void humanDiscardCard(StandardCard card) {
-        currentPlayer.addDiscardCards(card);
-        currentPlayer.getHand().remove(card);
-        cardsOnTable = card;
-        currentPlayer.setNumOfTurn(currentPlayer.getNumOfTurn() + 1);
+        try {
+            currentPlayer.addDiscardCards(card);
+            currentPlayer.getHand().remove(card);
+            cardsOnTable = card;
+            currentPlayer.setNumOfTurn(currentPlayer.getNumOfTurn() + 1);
+        } catch (Exception e) {
+            System.err.println("humanDiscardCard error: " + e.getMessage());
+        }
     }
 
     public void playerDrawCard() {
-        if (!deck.isEmpty()) {
-            StandardCard card = deck.drawCard();
-            currentPlayer.receiveCard(card);
+        try {
+            if (!deck.isEmpty()) {
+                StandardCard card = deck.drawCard();
+                currentPlayer.receiveCard(card);
+            }
+        } catch (Exception e) {
+            System.err.println("playerDrawCard error: " + e.getMessage());
         }
     }
 
     public void playerEatCard(StandardCard cardToEatArgument) {
-        if (currentPlayer == null || cardToEatArgument == null || this.cardsOnTable == null
-                || !this.cardsOnTable.equals(cardToEatArgument)) {
-            System.err.println(
-                    "GameLogic Error: Cannot execute playerEatCard. Conditions not met. CurrentPlayer: " + currentPlayer
-                            + ", cardToEat: " + cardToEatArgument + ", current cardsOnTable: " + this.cardsOnTable);
-            return;
+        try {
+            if (currentPlayer == null || cardToEatArgument == null || this.cardsOnTable == null
+                    || !this.cardsOnTable.equals(cardToEatArgument)) {
+                throw new IllegalStateException("GameLogic Error: Cannot execute playerEatCard. Conditions not met. CurrentPlayer: " + currentPlayer
+                        + ", cardToEat: " + cardToEatArgument + ", current cardsOnTable: " + this.cardsOnTable);
+            }
+
+            System.out.println("GameLogic: " + currentPlayer.getName() + " is eating " + cardToEatArgument);
+
+            currentPlayer.getEatenCards().add(cardToEatArgument);
+
+            this.cardsOnTable = null;
+
+            PhomPlayer previousPlayer = getPlayers()
+                    .get((getPlayers().indexOf(currentPlayer) - 1 + getPlayers().size()) % getPlayers().size());
+            previousPlayer.getDiscardCards().remove(cardToEatArgument);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
-
-        System.out.println("GameLogic: " + currentPlayer.getName() + " is eating " + cardToEatArgument);
-
-        currentPlayer.getEatenCards().add(cardToEatArgument);
-
-        this.cardsOnTable = null;
-
-        PhomPlayer previousPlayer = getPlayers()
-                .get((getPlayers().indexOf(currentPlayer) - 1 + getPlayers().size()) % getPlayers().size());
-        previousPlayer.getDiscardCards().remove(cardToEatArgument);
     }
 
     @Override
@@ -130,103 +144,122 @@ public class PhomGameLogic extends Game<StandardCard, PhomPlayer> {
     }
 
     public void playerMeldCard() {
-        for (List<StandardCard> meld : currentPlayer.findCombinations()) {
-            currentPlayer.getHand().removeAll(meld);
-            currentPlayer.getAllPhoms().add(meld);
-            this.MeldedCards.add(meld);
+        try {
+            for (List<StandardCard> meld : currentPlayer.findCombinations()) {
+                currentPlayer.getHand().removeAll(meld);
+                currentPlayer.getAllPhoms().add(meld);
+                this.MeldedCards.add(meld);
+            }
+        } catch (Exception e) {
+            System.err.println("playerMeldCard error: " + e.getMessage());
         }
     }
 
     @Override
     public void nextTurn() {
-        currentPlayer = getCurrentPlayer();
-        currentPlayer = getPlayers().get((getPlayers().indexOf(currentPlayer) + 1) % getPlayers().size());
+        try {
+            currentPlayer = getCurrentPlayer();
+            currentPlayer = getPlayers().get((getPlayers().indexOf(currentPlayer) + 1) % getPlayers().size());
+        } catch (Exception e) {
+            System.err.println("nextTurn error: " + e.getMessage());
+        }
     }
 
     public boolean canFormPhom(PhomPlayer player, StandardCard card) {
-        List<StandardCard> originalHand = new ArrayList<>(player.getHand());
-        List<StandardCard> originalEatenCards = new ArrayList<>(player.getEatenCards());
+        try {
+            List<StandardCard> originalHand = new ArrayList<>(player.getHand());
+            List<StandardCard> originalEatenCards = new ArrayList<>(player.getEatenCards());
 
-        player.receiveCard(card);
-        List<List<StandardCard>> newPhoms = player.findCombinations();
+            player.receiveCard(card);
+            List<List<StandardCard>> newPhoms = player.findCombinations();
 
-        boolean isValid = true;
-        Map<StandardCard, Integer> cardUsageMap = new HashMap<>();
+            boolean isValid = true;
+            Map<StandardCard, Integer> cardUsageMap = new HashMap<>();
 
-        for (List<StandardCard> phom : newPhoms) {
-            for (StandardCard c : phom) {
-                cardUsageMap.put(c, cardUsageMap.getOrDefault(c, 0) + 1);
-                if (cardUsageMap.get(c) >= 2) {
-                    isValid = false;
-                    break;
+            for (List<StandardCard> phom : newPhoms) {
+                for (StandardCard c : phom) {
+                    cardUsageMap.put(c, cardUsageMap.getOrDefault(c, 0) + 1);
+                    if (cardUsageMap.get(c) >= 2) {
+                        isValid = false;
+                        break;
+                    }
                 }
+                if (!isValid) break;
             }
-            if (!isValid) break;
+
+            player.getHand().clear();
+            player.getHand().addAll(originalHand);
+            player.getEatenCards().clear();
+            player.getEatenCards().addAll(originalEatenCards);
+
+            return isValid
+                    && cardUsageMap.getOrDefault(card, 0) == 1;
+        } catch (Exception e) {
+            System.err.println("canFormPhom error: " + e.getMessage());
+            return false;
         }
-
-        player.getHand().clear();
-        player.getHand().addAll(originalHand);
-        player.getEatenCards().clear();
-        player.getEatenCards().addAll(originalEatenCards);
-
-        return isValid 
-            && cardUsageMap.getOrDefault(card, 0) == 1;
     }
 
     public boolean isValidCombination(List<StandardCard> cards) {
-        if (cards.getFirst().getSuit() != cards.getLast().getSuit()) {
-            int tmp = cards.getFirst().getRank().getValue();
-            for (StandardCard card : cards) {
-                if (card.getRank().getValue() != tmp) {
-                    return false;
+        try {
+            if (cards.getFirst().getSuit() != cards.getLast().getSuit()) {
+                int tmp = cards.getFirst().getRank().getValue();
+                for (StandardCard card : cards) {
+                    if (card.getRank().getValue() != tmp) {
+                        return false;
+                    }
                 }
-            }
-            return true;
-        }
-
-        else {
-            for (int i = 0; i < cards.size() - 1; i++) {
-                if (cards.get(i).getRank().getValue() + 1 != cards.get(i + 1).getRank().getValue()) {
-                    return false;
+                return true;
+            } else {
+                for (int i = 0; i < cards.size() - 1; i++) {
+                    if (cards.get(i).getRank().getValue() + 1 != cards.get(i + 1).getRank().getValue()) {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
+        } catch (Exception e) {
+            System.err.println("isValidCombination error: " + e.getMessage());
+            return false;
         }
     }
 
     public void determineWinnerByScore() {
-        int minScore = Integer.MAX_VALUE;
-        PhomPlayer potentialWinner = null;
-        List<PhomPlayer> winners = new ArrayList<>();
+        try {
+            int minScore = Integer.MAX_VALUE;
+            PhomPlayer potentialWinner = null;
+            List<PhomPlayer> winners = new ArrayList<>();
 
-        System.out.println("Điểm số cuối cùng:");
-        for (PhomPlayer player : players) {
-            int score = 0;
-            for (StandardCard card : player.getHand()) {
-                score += card.getRank().getValue();
-            }
-            System.out.println("- " + player.getName() + ": " + score + " điểm");
-            if (score < minScore) {
-                minScore = score;
-                winners.clear();
-                winners.add(player);
-                potentialWinner = player;
-            } else if (score == minScore) {
-                winners.add(player);
+            System.out.println("Điểm số cuối cùng:");
+            for (PhomPlayer player : players) {
+                int score = 0;
+                for (StandardCard card : player.getHand()) {
+                    score += card.getRank().getValue();
+                }
+                System.out.println("- " + player.getName() + ": " + score + " điểm");
+                if (score < minScore) {
+                    minScore = score;
+                    winners.clear();
+                    winners.add(player);
+                    potentialWinner = player;
+                } else if (score == minScore) {
+                    winners.add(player);
+                }
             }
 
-        }
-
-        if (winners.size() == 1) {
-            this.winnerPlayer = potentialWinner;
-        } else {
-            for (PhomPlayer winner : winners) {
-                System.out.print(winner.getName() + " ");
+            if (winners.size() == 1) {
+                this.winnerPlayer = potentialWinner;
+            } else {
+                for (PhomPlayer winner : winners) {
+                    System.out.print(winner.getName() + " ");
+                }
+                System.out.println();
+                this.winnerPlayer = winners.get(0);
+                System.out.println("Trò chơi kết thúc với nhiều người chơi có điểm số bằng nhau. Người chiến thắng được chọn là: "
+                        + this.winnerPlayer.getName());
             }
-            System.out.println();
-            this.winnerPlayer = winners.get(0); // Chọn người chơi đầu tiên trong danh sách
-            System.out.println("Trò chơi kết thúc với nhiều người chơi có điểm số bằng nhau. Người chiến thắng được chọn là: "
-                    + this.winnerPlayer.getName());
+        } catch (Exception e) {
+            System.err.println("determineWinnerByScore error: " + e.getMessage());
         }
     }
 
@@ -235,21 +268,24 @@ public class PhomGameLogic extends Game<StandardCard, PhomPlayer> {
     }
 
     public PhomGameState getCurrentGameState() {
-        List<PhomPlayer> currentPlayers = Collections.unmodifiableList(new ArrayList<>(this.players));
-        PhomPlayer activePlayer = this.currentPlayer;
-        List<List<StandardCard>> currentMeldedCards = Collections.unmodifiableList(new ArrayList<>(MeldedCards));
-        return new PhomGameState(
-                currentPlayers,
-                activePlayer,
-                currentMeldedCards,
-                endGame(),
-                winnerPlayer,
-                cardsOnTable);
+        try {
+            List<PhomPlayer> currentPlayers = Collections.unmodifiableList(new ArrayList<>(this.players));
+            PhomPlayer activePlayer = this.currentPlayer;
+            List<List<StandardCard>> currentMeldedCards = Collections.unmodifiableList(new ArrayList<>(MeldedCards));
+            return new PhomGameState(
+                    currentPlayers,
+                    activePlayer,
+                    currentMeldedCards,
+                    endGame(),
+                    winnerPlayer,
+                    cardsOnTable);
+        } catch (Exception e) {
+            System.err.println("getCurrentGameState error: " + e.getMessage());
+            return null;
+        }
     }
 
     public StandardCard getCardsOnTable() {
         return cardsOnTable;
     }
-
-
 }
