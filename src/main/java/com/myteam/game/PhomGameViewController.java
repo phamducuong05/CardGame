@@ -23,6 +23,7 @@ import javafx.util.Duration;
 import com.myteam.game.controller.PhomLogicController;
 import com.myteam.game.model.core.card.WestCard;
 import com.myteam.game.model.core.enums.Rank;
+import com.myteam.game.model.phom.PhomBotPlayer;
 import com.myteam.game.model.phom.PhomGameState;
 import com.myteam.game.model.phom.PhomHumanPlayer;
 import com.myteam.game.model.phom.PhomPlayer;
@@ -747,6 +748,21 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         if (exitButton != null) {
             exitButton.setVisible(true);
             exitButton.setManaged(true);
+        }
+        for (PhomPlayer player : logicController.getGameLogic().getPlayers()) {
+            if (player instanceof PhomBotPlayer) {
+                int index = logicController.getGameLogic().getPlayers().indexOf(player);
+                HBox OpponentCardsReveal = new HBox();
+                OpponentCardsReveal.setSpacing(-50);
+                for (WestCard card : player.getHand()) {
+                    ImageView cardView = createDisplayOnlyCardImageView(card);
+
+                    OpponentCardsReveal.getChildren().add(cardView);
+                }
+                Pane cardArea = playerRevealCardAreas[index];
+                cardArea.getChildren().add(OpponentCardsReveal);
+
+            }
         }
     }
 }

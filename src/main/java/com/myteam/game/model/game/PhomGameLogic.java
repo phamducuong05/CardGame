@@ -11,6 +11,7 @@ import com.myteam.game.model.core.enums.Suit;
 import com.myteam.game.model.core.enums.Rank;
 import com.myteam.game.model.phom.PhomGameState;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
@@ -188,15 +189,41 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
     }
 
     public boolean canFormPhom(PhomPlayer player, WestCard card) {
-        int numOfPhom = player.findCombinations().size();
+        List<WestCard> originalHand = new ArrayList<>(player.getHand());
+        List<WestCard> originalEatenCards = new ArrayList<>(player.getEatenCards());
+
+        // 2. Thêm bài tạm thời và tìm phỏm mới
         player.receiveCard(card);
-        int tmp = numOfPhom;
-        numOfPhom = player.findCombinations().size();
-        player.getHand().remove(card);
-        if (numOfPhom == tmp)
-            return false;
-        else
-            return true;
+        List<List<WestCard>> newPhoms = player.findCombinations();
+
+        // 3. Kiểm tra xem có lá bài nào thuộc nhiều phỏm không
+        boolean isValid = true;
+        Map<WestCard, Integer> cardUsageMap = new HashMap<>();
+
+        // Đếm số lần mỗi lá bài xuất hiện trong các phỏm
+        for (List<WestCard> phom : newPhoms) {
+            for (WestCard c : phom) {
+                cardUsageMap.put(c, cardUsageMap.getOrDefault(c, 0) + 1);
+                // Nếu có lá bài xuất hiện trong >= 2 phỏm → Không hợp lệ
+                if (cardUsageMap.get(c) >= 2) {
+                    isValid = false;
+                    break;
+                }
+            }
+            if (!isValid) break;
+        }
+
+        // 4. Khôi phục trạng thái ban đầu
+        player.getHand().clear();
+        player.getHand().addAll(originalHand);
+        player.getEatenCards().clear();
+        player.getEatenCards().addAll(originalEatenCards);
+
+        // 5. Điều kiện hợp lệ:
+        // - Lá bài mới (card) phải thuộc đúng 1 phỏm
+        // - Không có lá bài nào thuộc nhiều phỏm
+        return isValid 
+            && cardUsageMap.getOrDefault(card, 0) == 1;
     }
 
     public boolean isValidCombination(List<WestCard> cards) {
@@ -227,7 +254,10 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
 
         System.out.println("Điểm số cuối cùng:");
         for (PhomPlayer player : players) {
-            int score = player.calculateScore();
+            int score = 0;
+            for (WestCard card : player.getHand()) {
+                score += card.getRank().getValue();
+            }
             System.out.println("- " + player.getName() + ": " + score + " điểm");
             if (score < minScore) {
                 minScore = score;
@@ -247,7 +277,9 @@ public class PhomGameLogic extends Game<WestCard, PhomPlayer> {
                 System.out.print(winner.getName() + " ");
             }
             System.out.println();
-            this.winnerPlayer = null;
+            this.winnerPlayer = winners.get(0); // Chọn người chơi đầu tiên trong danh sách
+            System.out.println("Trò chơi kết thúc với nhiều người chơi có điểm số bằng nhau. Người chiến thắng được chọn là: "
+                    + this.winnerPlayer.getName());
         }
     }
 

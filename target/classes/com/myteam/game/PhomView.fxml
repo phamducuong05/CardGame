@@ -32,17 +32,11 @@
                      </font>
                   </Label>
                </children>
-               <padding>
-                  <Insets top="-90.0" />
-               </padding>
             </VBox>
             <StackPane fx:id="player3RevealArea" prefHeight="90.0" prefWidth="70.0">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
-               <padding>
-                  <Insets top="-80.0" />
-               </padding>
                <children>
                   <HBox fx:id="player3CardArea" alignment="CENTER" prefHeight="90.0" prefWidth="70.0" />
                   <Label fx:id="player3Counter" styleClass="card-count-label-gray-bg" textFill="#00d0ff" visible="false">

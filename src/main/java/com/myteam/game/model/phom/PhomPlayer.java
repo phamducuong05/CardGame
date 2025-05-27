@@ -73,6 +73,7 @@ public abstract class PhomPlayer extends Player<WestCard> {
         for (List<WestCard> cards : rankMap.values()) {
             if (cards.size() >= 3) {
                 allPhoms.add(cards);
+                newHand.removeAll(cards);
             }
         }
         // Find all combinations by suit
@@ -93,6 +94,7 @@ public abstract class PhomPlayer extends Player<WestCard> {
         for (List<WestCard> cards : suitMap.values()) {
             for (List<WestCard> cardsTemporary : findAllConsecutive(cards)) {
                 allPhoms.add(cardsTemporary);
+                newHand.removeAll(cardsTemporary);
             }
         }
         return allPhoms;

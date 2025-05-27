@@ -137,13 +137,19 @@ public class PhomLogicController extends LogicController<WestCard, PhomPlayer, P
             viewController.updateView(gameLogic.getCurrentGameState());
             checkAndPlayBotTurnIfNeeded();
         } else {
+            gameLogic.playerMeldCard();
+            viewController.updateView(gameLogic.getCurrentGameState());
             gameLogic.determineWinnerByScore();
             PhomPlayer winner = gameLogic.getWinnerPlayer();
             if (viewController != null) {
                 viewController.showGameOver(winner);
             }
             for (PhomPlayer player : gameLogic.getCurrentGameState().getPlayers()) {
-                System.out.println(player.getName() + "score: " + player.calculateScore());
+                int score = 0;
+                for(WestCard card : player.getHand()) {
+                    score += card.getRank().getValue();
+                }
+                System.out.println(player.getName() + "score: " + score);
             }
             System.out.println("Game Over! Winner: " + winner.getName());
 
