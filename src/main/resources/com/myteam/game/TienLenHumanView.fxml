@@ -12,7 +12,7 @@
    <bottom>
       <VBox alignment="CENTER" prefHeight="150.0" prefWidth="1430.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox fx:id="player1CardArea" alignment="CENTER" prefHeight="105.0" prefWidth="600.0" spacing="-50" />
+            <HBox fx:id="player1CardArea" alignment="CENTER" prefHeight="105.0" prefWidth="600.0" spacing="-40" />
             <Label alignment="CENTER" prefHeight="20.0" prefWidth="72.0" styleClass="card-count-label" text="Player 1">
                <font>
                   <Font size="16.0" />
@@ -24,7 +24,7 @@
    <top>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="1430.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox fx:id="player3CardArea" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="-50" />
+            <HBox fx:id="player3CardArea" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="-40" />
             <Label alignment="CENTER" prefHeight="24.0" prefWidth="68.0" styleClass="card-count-label" text="Player 3">
                <font>
                   <Font size="16.0" />
@@ -38,7 +38,7 @@
          <center>
             <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox fx:id="cardCenterArea" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="-50" />
+                  <HBox fx:id="cardCenterArea" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="-40" />
                   <Button fx:id="dealButton" mnemonicParsing="false" onAction="#handleDealButton" prefHeight="28.0" prefWidth="45.0" text="Deal">
                      <font>
                         <Font size="14.0" />

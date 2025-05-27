@@ -87,6 +87,12 @@ public class GameMenuController implements Initializable {
     @FXML
     private Button VsBotButton;
     @FXML
+    private Button OneVsOneButton;
+    @FXML
+    private Button OneVsTwoButton;
+    @FXML
+    private Button OneVsThreeButton;
+    @FXML
     private Button BackButton;
 
     // @FXML private Button exitAppButton; // Nếu bạn có nút Exit riêng trong FXML
@@ -154,38 +160,84 @@ public class GameMenuController implements Initializable {
     void handleVsHumanButtonAction(ActionEvent event) {
         currentSelections.opponentMode = "VsHuman";
         historyStack.push(playerModeButtonGroup);
-        if (currentSelections.gameType.equals("TienLen")) {
-            try {
-                initalizeTienLenHuman();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (currentSelections.gameType.equals("Phom")) {
-            try {
-                initalizePhomHuman();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        // if (currentSelections.gameType.equals("TienLen")) {
+        // try {
+        // initalizeTienLenHuman();
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
+        // } else if (currentSelections.gameType.equals("Phom")) {
+        // try {
+        // initalizePhomHuman();
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
+        // }
+        showScreen(numBotsButtonGroup);
     }
 
     @FXML
     void handleVsBotButtonAction(ActionEvent event) {
         currentSelections.opponentMode = "VsBot";
         historyStack.push(playerModeButtonGroup);
-        if (currentSelections.gameType == "TienLen") {
+        // if (currentSelections.gameType == "TienLen") {
+        // try {
+        // initalizeTienLenBot();
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
+        // } else if (currentSelections.gameType == "Phom") {
+        // try {
+        // initalizePhomBot();
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
+        // }
+        showScreen(numBotsButtonGroup);
+    }
+
+    @FXML
+    void handleBotNumberSelected(ActionEvent event) {
+        // Xử lý sự kiện khi người dùng chọn số lượng bot
+        if (event.getSource() instanceof Button button) {
+            String buttonId = button.getId();
+            switch (buttonId) {
+                case "OneVsOneButton":
+                    currentSelections.numberOfBots = 1;
+                    break;
+                case "OneVsTwoButton":
+                    currentSelections.numberOfBots = 2;
+                    break;
+                case "OneVsThreeButton":
+                    currentSelections.numberOfBots = 3;
+                    break;
+                default:
+                    currentSelections.numberOfBots = 0; // Không có bot
+            }
+        }
+
+        if (currentSelections.gameType.equals("TienLen")) {
             try {
-                initalizeTienLenBot();
+                if (currentSelections.opponentMode.equals("VsHuman")) {
+                    initalizeTienLenHuman();
+                } else if (currentSelections.opponentMode.equals("VsBot")) {
+                    initalizeTienLenBot();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (currentSelections.gameType == "Phom") {
+        } else if (currentSelections.gameType.equals("Phom")) {
             try {
-                initalizePhomBot();
+                if (currentSelections.opponentMode.equals("VsHuman")) {
+                    initalizePhomHuman();
+                } else if (currentSelections.opponentMode.equals("VsBot")) {
+                    initalizePhomBot();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
     }
 
     @FXML
@@ -282,13 +334,16 @@ public class GameMenuController implements Initializable {
         Parent root = fxmlLoader.load();
         PhomGameViewController uiController = fxmlLoader.getController(); // Lấy instance của PhomViewController
         uiController.setMainPlayerIndex(0);
+        uiController.setNumberOfPlayers(currentSelections.numberOfBots + 1);
         // 2. Tạo các thành phần Logic Game
         // Tạo người chơi (ví dụ)
         List<PhomPlayer> players = new ArrayList<>();
         players.add(new PhomHumanPlayer("Player 1 (You)")); // Người chơi chính
-        players.add(new PhomBotPlayer("Bot 1"));
-        players.add(new PhomBotPlayer("Bot 2"));
-        players.add(new PhomBotPlayer("Bot 3"));
+        // players.add(new PhomBotPlayer("Bot 1"));
+        // players.add(new PhomBotPlayer("Bot 2"));
+        for (int i = 0; i < currentSelections.numberOfBots; i++) {
+            players.add(new PhomBotPlayer("Bot " + (i + 1)));
+        }
 
         StandardCardDeck<PhomPlayer> deck = new StandardCardDeck<>(); // Bộ bài
         // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)

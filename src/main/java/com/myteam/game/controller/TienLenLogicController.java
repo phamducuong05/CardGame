@@ -211,7 +211,6 @@ public class TienLenLogicController extends LogicController<StandardCard, TienLe
             viewController.onGameEnded(gameLogic.getCurrentGameState(), winner);
         }
     }
-
     // findWinner() có thể đơn giản là người đầu tiên hết bài,
     // hoặc nếu bạn có ranking, người đứng đầu ranking.
     private TienLenPlayer findWinner() {
@@ -246,8 +245,7 @@ public class TienLenLogicController extends LogicController<StandardCard, TienLe
         if (currentPlayer instanceof TienLenBotPlayer) {
             TienLenBotPlayer bot = (TienLenBotPlayer) currentPlayer;
             TienLenGameState gameState = gameLogic.getCurrentGameState();
-            // viewController.displayOpponentCards(bot.getHand()); // Giả sử có phương thức
-            // này để hiển thị bài bot
+            //viewController.displayOpponentCards(bot.getHand()); // Giả sử có phương thức này để hiển thị bài bot
             viewController.setMenuLabel(bot.getName() + "'s turn. Bot is thinking..."); // Giả sử có setMenuLabel
             System.out.println(bot.getName() + "'s turn.");
 

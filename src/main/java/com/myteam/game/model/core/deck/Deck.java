@@ -42,7 +42,7 @@ public abstract class Deck<T extends Card, P extends Player<T>> {
         }
 
         for (int i = 0; i < players.size() * handSize; i++) {
-            players.get(i % 4).receiveCard(deck.pop());
+            players.get(i % players.size()).receiveCard(deck.pop());
         }
     }
 

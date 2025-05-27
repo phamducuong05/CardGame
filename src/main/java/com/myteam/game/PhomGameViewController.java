@@ -135,6 +135,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
     private Pane[] playerRevealCardAreas;
     private Pane[] playerInfos; // Khu vực hiển thị thông tin người chơi
 
+    private int numberOfPlayers = 4;
+
     // --- INITIALIZATION ---
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -165,7 +167,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
                 player3RevealArea,
                 player4RevealArea
         };
-
+        updatePlayerUIVisibility(numberOfPlayers); // Cập nhật UI với số lượng người chơi hiện tại
         // Ban đầu, các nút hành động (ngoại trừ Deal) nên được ẩn/vô hiệu hóa
         setGameActionButtonsVisible(false);
         if (dealButton != null) {
@@ -182,6 +184,56 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
             cardCenterArea.getChildren().clear(); // Dọn dẹp khu vực giữa
         updateAllOpponentCardCountsVisibility(false); // Ẩn label đếm bài của đối thủ
 
+    }
+
+    public void setNumberOfPlayers(int numPlayers) {
+        if (numPlayers < 1 || numPlayers > 4) {
+            System.err.println("Invalid number of players: " + numPlayers);
+            return;
+        }
+        this.numberOfPlayers = numPlayers;
+    }
+
+    private void updatePlayerUIVisibility(int numActivePlayers) {
+        this.numberOfPlayers = numActivePlayers; // Cập nhật số lượng người chơi hiện tại
+
+        for (int i = 0; i < playerInfos.length; i++) {
+            boolean isActive = i < numActivePlayers;
+
+            if (playerInfos[i] != null) {
+                playerInfos[i].setVisible(isActive);
+                playerInfos[i].setManaged(isActive);
+            }
+            if (playerCardAreas[i] != null) {
+                playerCardAreas[i].setVisible(isActive);
+                playerCardAreas[i].setManaged(isActive);
+                if (!isActive)
+                    playerCardAreas[i].getChildren().clear(); // Dọn dẹp nếu không active
+            }
+
+            // Đối với playerCardCountLabels và playerRevealCardAreas, chúng ta bắt đầu từ
+            // index 1
+            // và chỉ áp dụng cho đối thủ.
+            if (i > 0) { // Bỏ qua người chơi chính (index 0) cho các label và reveal area này
+                if (playerCardCountLabels[i] != null) {
+                    playerCardCountLabels[i].setVisible(isActive); // Chỉ hiện khi người chơi đó active
+                }
+                if (playerRevealCardAreas[i] != null) {
+                    playerRevealCardAreas[i].setVisible(isActive);
+                    playerRevealCardAreas[i].setManaged(isActive);
+                    if (!isActive)
+                        playerRevealCardAreas[i].getChildren().clear();
+                }
+            }
+        }
+        // Đảm bảo khu vực bài của người chơi chính (nếu có) luôn được quản lý nếu nó
+        // hiển thị
+        // Điều này quan trọng nếu bạn muốn người chơi chính luôn hiện diện
+        // (numActivePlayers >= 1)
+        if (numActivePlayers > 0 && playerCardAreas[0] != null) {
+            playerCardAreas[0].setVisible(true);
+            playerCardAreas[0].setManaged(true);
+        }
     }
 
     private void setGameActionButtonsVisible(boolean visible) {

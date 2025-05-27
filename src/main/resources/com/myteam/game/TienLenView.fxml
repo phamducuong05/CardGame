@@ -15,14 +15,14 @@
    <top>
       <HBox alignment="CENTER" prefHeight="200.0" spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
+            <VBox fx:id="player3Info" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
                <children>
                   <StackPane prefHeight="80.0" prefWidth="80.0">
                      <children>
                         <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
                      </children>
                   </StackPane>
-                  <Label text="Label">
+                  <Label styleClass="card-count-label-gray-bg" text="Bot 3">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
@@ -56,14 +56,14 @@
    <left>
       <HBox alignment="CENTER" prefWidth="200.0" spacing="8.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
+            <VBox fx:id="player4Info" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
                <children>
                   <StackPane prefHeight="80.0" prefWidth="80.0">
                      <children>
                         <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
                      </children>
                   </StackPane>
-                  <Label text="Label">
+                  <Label styleClass="card-count-label-gray-bg" text="Bot 3">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
@@ -92,14 +92,14 @@
          </padding>
          <children>
             <Pane prefHeight="185.0" prefWidth="286.0" />
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
+            <VBox fx:id="player1Info" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
                <children>
                   <StackPane prefHeight="80.0" prefWidth="80.0">
                      <children>
                         <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
                      </children>
                   </StackPane>
-                  <Label text="Label">
+                  <Label styleClass="card-count-label-gray-bg" text="Player 1">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
@@ -108,7 +108,7 @@
                   <Insets bottom="-30.0" />
                </HBox.margin>
             </VBox>
-            <HBox fx:id="player1CardArea" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="894.0">
+            <HBox fx:id="player1CardArea" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="894.0" spacing="-30">
                <HBox.margin>
                   <Insets bottom="-30.0" />
                </HBox.margin></HBox>
@@ -128,14 +128,14 @@
                   </Label>
                </children>
             </StackPane>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
+            <VBox fx:id="player2Info" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="3.0">
                <children>
                   <StackPane prefHeight="80.0" prefWidth="80.0">
                      <children>
                         <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
                      </children>
                   </StackPane>
-                  <Label text="Label">
+                  <Label styleClass="card-count-label-gray-bg" text="Bot 2">
                      <font>
                         <Font size="18.0" />
                      </font></Label>
