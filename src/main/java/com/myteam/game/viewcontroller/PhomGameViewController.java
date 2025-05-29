@@ -1,9 +1,15 @@
-package com.myteam.game; // Giả sử PhomViewController nằm trong package này
+package com.myteam.game.viewcontroller; // Giả sử PhomViewController nằm trong package này
 
 // Imports từ JavaFX
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 // import javafx.scene.Parent; // Không cần nếu không chuyển scene
 // import javafx.scene.Scene;  // Không cần
 import javafx.scene.control.Button;
@@ -30,6 +36,7 @@ import com.myteam.game.model.phom.player.PhomHumanPlayer;
 import com.myteam.game.model.phom.player.PhomPlayer;
 // import com.myteam.game.view.PhomGameViewController; // Interface này sẽ được implement bởi class này
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 // import java.util.Collections; // Nếu bạn muốn sắp xếp bài
@@ -39,12 +46,16 @@ import java.util.ResourceBundle;
 import java.util.Set;
 // import java.util.stream.Collectors; // Không cần thiết cho các hàm cơ bản này
 
-public class PhomGameViewController implements Initializable /* , PhomGameViewController */ { // Bỏ comment
+public class PhomGameViewController implements Initializable, PhomViewInterface /* , PhomGameViewController */ { // Bỏ
+                                                                                                                 // comment
     // PhomGameViewController khi
     // bạn sẵn sàng implement đầy
     // đủ
 
     // <editor-fold desc="FXML Components">
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
 
     @FXML
     private VBox player1Info;
@@ -236,7 +247,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    private void setGameActionButtonsVisible(boolean visible) {
+    @Override
+    public void setGameActionButtonsVisible(boolean visible) {
         if (eatButton != null) {
             eatButton.setVisible(visible);
             eatButton.setManaged(visible);
@@ -255,7 +267,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    private void updateAllOpponentCardCountsVisibility(boolean visible) {
+    @Override
+    public void updateAllOpponentCardCountsVisibility(boolean visible) {
         for (int i = 1; i < playerCardCountLabels.length; i++) { // Bắt đầu từ 1 vì player 0 là main player
             if (playerCardCountLabels[i] != null) {
                 playerCardCountLabels[i].setVisible(visible);
@@ -404,7 +417,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         updateAllOpponentCardCountsVisibility(true); // Hiện label đếm bài của đối thủ
     }
 
-    private void updateMeld(PhomGameState gameState) {
+    @Override
+    public void updateMeld(PhomGameState gameState) {
         if (gameState == null || gameState.getPlayers() == null)
             return;
 
@@ -443,7 +457,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    private void updateAllPlayerHandsDisplay(List<PhomPlayer> players) {
+    @Override
+    public void updateAllPlayerHandsDisplay(List<PhomPlayer> players) {
         if (playerCardAreas == null)
             return;
 
@@ -487,7 +502,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         clearSelectedCardsUI();
     }
 
-    private void updateAllPlayerEatenCardsDisplay(List<PhomPlayer> players) {
+    @Override
+    public void updateAllPlayerEatenCardsDisplay(List<PhomPlayer> players) {
         if (playerEatenCardDisplayAreas == null)
             return;
 
@@ -509,7 +525,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    private void updateAllPlayerLastDiscardDisplay(List<PhomPlayer> players, StandardCard cardOnTableGlobal) {
+    @Override
+    public void updateAllPlayerLastDiscardDisplay(List<PhomPlayer> players, StandardCard cardOnTableGlobal) {
         if (playerEatAreas == null)
             return;
 
@@ -538,7 +555,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    private void updateCenterDeckDisplay(int deckSize) {
+    @Override
+    public void updateCenterDeckDisplay(int deckSize) {
         if (cardCenterArea == null || cardCenterCounter == null)
             return;
         cardCenterArea.getChildren().clear();
@@ -566,7 +584,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
             // logic controller có thể sẽ gọi updateView() ngay sau khi deal xong)
             clearAllPlayerAreasForNewGame();
             logicController.handleDeal(); // LogicController sẽ gọi gameLogic.startGame()
-                                          // và sau đó gọi lại this.updateView(newState)
+            // và sau đó gọi lại this.updateView(newState)
             if (dealButton != null) {
                 dealButton.setVisible(false);
                 dealButton.setManaged(false);
@@ -576,7 +594,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    private void clearAllPlayerAreasForNewGame() {
+    @Override
+    public void clearAllPlayerAreasForNewGame() {
         if (playerCardAreas != null) {
             for (Pane area : playerCardAreas)
                 if (area != null)
@@ -634,7 +653,8 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
-    private void clearSelectedCardsUI() {
+    @Override
+    public void clearSelectedCardsUI() {
         for (ImageView iv : selectedImageViews) {
             resetCardPosition(iv);
         }
@@ -698,6 +718,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         // TODO
     }
 
+    @Override
     public void promptPlayerToDiscard(PhomPlayer player, PhomGameState gameState) {
         // System.out.println("UI: " + player.getName() + ", please discard.");
         // PhomPlayer mainHuman =
@@ -724,6 +745,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         } // updateActionButtonsState(gameState);
     }
 
+    @Override
     public void promptPlayerToEat(PhomPlayer player, PhomGameState gameState) {
         // System.out.println("UI: " + player.getName() + ", please discard.");
         // PhomPlayer mainHuman =
@@ -738,6 +760,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         eatButton.setManaged(true);
     }
 
+    @Override
     public void promptPlayerToDraw(PhomPlayer player, PhomGameState gameState) {
         // System.out.println("UI: " + player.getName() + ", please discard.");
         // PhomPlayer mainHuman =
@@ -747,7 +770,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         // phải đánh
         // }
         // if (gameState != null) {
-        // updateActionButtonsState(gameState);
+        // updateActionButtonsState(gameState);displayBotAction
         drawButton.setVisible(true);
         drawButton.setManaged(true);
     }
@@ -778,17 +801,34 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
+    @Override
     public void displayBotAction(String text) {
         this.setMenuLabel(text);
     }
 
     @FXML
-    void handleExitButton(ActionEvent event) {
-        System.out.println("Exit button clicked. Closing application.");
-        if (exitButton != null && exitButton.getScene() != null && exitButton.getScene().getWindow() != null) {
-            ((Stage) exitButton.getScene().getWindow()).close();
-        } else {
-            System.exit(0); // Fallback if stage is not accessible
+    void handleExitButton(ActionEvent event) throws IOException {
+        if (logicController != null) {
+            logicController.markGameAsStopped(); // **CHỈ CẦN GỌI HÀM NÀY**
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/myteam/game/GameMenuView.fxml"));
+            Parent menuRoot = loader.load();
+            GameMenuController menuController = loader.getController(); // Lấy instance MỚI của GameMenuController
+
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // QUAN TRỌNG: Truyền Stage cho GameMenuController MỚI
+            menuController.setStage(currentStage); // Giả sử bạn có phương thức setStage(Stage stage) trong
+                                                   // GameMenuController
+
+            Scene menuScene = new Scene(menuRoot);
+            currentStage.setScene(menuScene);
+            currentStage.setTitle("Game Menu");
+            currentStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Xử lý lỗi
         }
     }
 
@@ -818,6 +858,7 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
         }
     }
 
+    @Override
     public void showGameOver(PhomPlayer winnerPlayer) {
         updateMeld(logicController.getGameLogic().getCurrentGameState());
         String winner = winnerPlayer.getName();
@@ -843,5 +884,54 @@ public class PhomGameViewController implements Initializable /* , PhomGameViewCo
 
             }
         }
+
+        javafx.application.Platform.runLater(() -> {
+            showWinnerPopup(winner);
+        });
+    }
+
+    private void showWinnerPopup(String winnerName) {
+        Alert alert = new Alert(AlertType.INFORMATION); // Loại pop-up thông tin
+        alert.setTitle("Game Over!");
+        alert.setHeaderText(null); // Không cần header text phức tạp
+
+        if (winnerName != null && !winnerName.isEmpty()) {
+            alert.setContentText("Congratulations, " + winnerName + " is the winner!");
+        } else {
+            alert.setContentText("The game has ended. It's a draw or no clear winner.");
+        }
+
+        // Thêm nút OK (mặc định đã có, nhưng có thể tùy chỉnh nếu muốn)
+        // ButtonType okButton = new ButtonType("OK", ButtonData.OK_DONE);
+        // alert.getButtonTypes().setAll(okButton);
+
+        // Hiển thị pop-up và đợi người dùng đóng nó
+        alert.showAndWait();
+    }
+
+    public void onGameEnded(PhomGameState gameState, PhomPlayer winner) {
+        System.out.println("Game ended. Winner: " + (winner != null ? winner.getName() : "None/Draw"));
+        setGameActionButtonsVisible(false);
+        dealButton.setVisible(true);
+        dealButton.setManaged(true);
+        updateAllOpponentCardCountsVisibility(false);
+
+        String winnerName = null;
+        String message = "Game Over!";
+        if (winner != null) {
+            winnerName = winner.getName();
+            message += " Winner: " + winnerName + "!";
+        } else {
+            message += " No clear winner.";
+        }
+        setMenuLabel(message); // Vẫn cập nhật menu label
+        updateView(gameState); // Cập nhật UI lần cuối
+
+        // Hiển thị pop-up thông báo người thắng
+        final String finalWinnerName = winnerName; // Cần biến final để dùng trong lambda
+        // Chạy trên luồng UI của JavaFX
+        javafx.application.Platform.runLater(() -> {
+            showWinnerPopup(finalWinnerName);
+        });
     }
 }

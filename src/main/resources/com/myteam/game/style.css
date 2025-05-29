@@ -45,3 +45,41 @@
     -fx-background-repeat: no-repeat;
     
 }
+
+.basic-game-background {
+  -fx-background-color: #81210b; /* lightgreen */
+}
+
+.circle1 {
+    -fx-fill: url('Avatar1.jpg');
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 0);
+}
+
+.circle2 {
+    -fx-fill: url('Avatar2.png');
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 0);
+}
+
+.circle3 {
+    -fx-fill: url('Avatar3.jpg');
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 0);
+}
+
+.circle4 {
+    -fx-fill: url('Avatar4.png');
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 0);
+}
+
+
+.game-button {
+    -fx-background-color: linear-gradient(to bottom, #c2652f, #a38848); /* Gradient xanh lá */
+    -fx-text-fill: white; /* Màu chữ trắng */
+    -fx-font-size: 12px; /* Kích thước chữ */
+    -fx-font-weight: bold; /* Chữ đậm */
+    -fx-background-radius: 10; /* Bo góc nút */
+    -fx-border-radius: 10; /* Bo góc viền */
+    -fx-border-color: #e8ff74; /* Viền xanh đậm */
+    -fx-border-width: 2; /* Độ dày viền */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.5, 0, 2); /* Bóng đổ */
+    -fx-padding: 8 16; /* Khoảng cách bên trong */
+}

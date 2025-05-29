@@ -3,7 +3,11 @@ package com.myteam.game.viewcontroller;
 // Imports từ JavaFX
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 // import javafx.scene.Parent; // Không cần nếu không chuyển scene
@@ -25,12 +29,12 @@ import javafx.util.Duration;
 import com.myteam.game.controller.TienLenLogicController;
 import com.myteam.game.model.core.card.StandardCard;
 import com.myteam.game.model.core.enums.Rank;
-import com.myteam.game.model.phom.gamestate.PhomGameState;
 // import com.myteam.game.view.PhomGameViewController; // Interface này sẽ được implement bởi class này
 import com.myteam.game.model.tienlen.gamestate.TienLenGameState;
 import com.myteam.game.model.tienlen.player.TienLenHumanPlayer;
 import com.myteam.game.model.tienlen.player.TienLenPlayer;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
@@ -43,12 +47,13 @@ import java.util.Set;
 // import java.util.stream.Collectors; // Không cần thiết cho các hàm cơ bản này
 import java.util.stream.Collectors;
 
-public class TienLenGameViewController implements Initializable /* , PhomGameViewController */ { // Bỏ comment
+public class TienLenGameViewController implements Initializable, TienLenViewInterface /* , PhomGameViewController */ { // Bỏ
+    // comment
     // PhomGameViewController khi
-    // bạn sẵn sàng implement đầy
-    // đủ
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
 
-    // <editor-fold desc="FXML Components">
     @FXML
     private VBox player1Info;
     @FXML
@@ -147,7 +152,8 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
 
     }
 
-    private void setGameActionButtonsVisible(boolean visible) {
+    @Override
+    public void setGameActionButtonsVisible(boolean visible) {
 
         if (playButton != null) {
             playButton.setVisible(visible);
@@ -168,7 +174,8 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         }
     }
 
-    private void updateAllOpponentCardCountsVisibility(boolean visible) {
+    @Override
+    public void updateAllOpponentCardCountsVisibility(boolean visible) {
         for (int i = 1; i < playerCardCountLabels.length; i++) { // Bắt đầu từ 1 vì player 0 là main player
             if (playerCardCountLabels[i] != null) {
                 playerCardCountLabels[i].setVisible(visible);
@@ -277,6 +284,7 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         this.logicController = logicController;
     }
 
+    @Override
     public void updateView(TienLenGameState gameState) {
         if (logicController == null || gameState == null) {
             System.err.println("Cannot update view: LogicController or GameState is null.");
@@ -300,7 +308,8 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         updateAllOpponentCardCountsVisibility(true); // Hiện label đếm bài của đối thủ
     }
 
-    private void updateAllPlayerHandsDisplay(List<TienLenPlayer> players) {
+    @Override
+    public void updateAllPlayerHandsDisplay(List<TienLenPlayer> players) {
         if (playerCardAreas == null)
             return;
 
@@ -394,7 +403,8 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         // // Cập nhật nút Play dựa trên lựa chọn
     }
 
-    private void clearAllPlayerAreasForNewGame() {
+    @Override
+    public void clearAllPlayerAreasForNewGame() {
         if (playerCardAreas != null) {
             for (Pane area : playerCardAreas)
                 if (area != null)
@@ -410,7 +420,8 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         }
     }
 
-    private List<StandardCard> getSelectedWestCardsFromUI() {
+    @Override
+    public List<StandardCard> getSelectedWestCardsFromUI() {
         if (selectedImageViews.isEmpty()) {
             return Collections.emptyList(); // Hoặc new ArrayList<>()
         }
@@ -488,16 +499,33 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
     }
 
     @FXML
-    void handleExitButton(ActionEvent event) {
-        System.out.println("Exit button clicked. Closing application.");
-        if (exitButton != null && exitButton.getScene() != null && exitButton.getScene().getWindow() != null) {
-            ((Stage) exitButton.getScene().getWindow()).close();
-        } else {
-            System.exit(0); // Fallback if stage is not accessible
+    void handleExitButton(ActionEvent event) throws IOException {
+        if (logicController != null) {
+            logicController.markGameAsStopped(); // **CHỈ CẦN GỌI HÀM NÀY**
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/myteam/game/GameMenuView.fxml"));
+            Parent menuRoot = loader.load();
+            GameMenuController menuController = loader.getController(); // Lấy instance MỚI của GameMenuController
+
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            // QUAN TRỌNG: Truyền Stage cho GameMenuController MỚI
+            menuController.setStage(currentStage); // Giả sử bạn có phương thức setStage(Stage stage) trong
+                                                   // GameMenuController
+
+            Scene menuScene = new Scene(menuRoot);
+            currentStage.setScene(menuScene);
+            currentStage.setTitle("Game Menu");
+            currentStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Xử lý lỗi
         }
     }
 
-    private void clearSelectedCardsUI() {
+    @Override
+    public void clearSelectedCardsUI() {
         for (ImageView iv : selectedImageViews) {
             resetCardPosition(iv);
         }
@@ -539,6 +567,7 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         }
     }
 
+    @Override
     public void promptPlayerForAction(TienLenPlayer player, TienLenGameState gameState) {
         System.out.println("Prompting player " + player.getName() + " for action");
         // In a real implementation, would enable appropriate UI controls
@@ -550,11 +579,13 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         // In a real implementation, would show an error message in the UI
     }
 
+    @Override
     public void showUIMessage(String message) { // Hàm này bạn đã có
         System.out.println("UI DISPLAY: " + message);
         // Cập nhật Label trên UI nếu có
     }
 
+    @Override
     public void setMenuLabel(String text) {
         if (this.menuLabel != null) {
             this.menuLabel.setText(text);
@@ -606,13 +637,24 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         alert.showAndWait();
     }
 
+    @Override
     public void onGameEnded(TienLenGameState gameState, TienLenPlayer winner) {
         System.out.println("Game ended. Winner: " + (winner != null ? winner.getName() : "None/Draw"));
-        setGameActionButtonsVisible(false);
         dealButton.setVisible(true);
         dealButton.setManaged(true);
         updateAllOpponentCardCountsVisibility(false);
-
+        if (skipButton != null) {
+            skipButton.setVisible(false);
+            skipButton.setManaged(false);
+        }
+        if (playButton != null) {
+            playButton.setVisible(false);
+            playButton.setManaged(false);
+        }
+        if (exitButton != null) {
+            exitButton.setVisible(true);
+            exitButton.setManaged(true);
+        }
         String winnerName = null;
         String message = "Game Over!";
         if (winner != null) {
@@ -623,7 +665,10 @@ public class TienLenGameViewController implements Initializable /* , PhomGameVie
         }
         setMenuLabel(message); // Vẫn cập nhật menu label
         updateView(gameState); // Cập nhật UI lần cuối
-
+        if (exitButton != null) {
+            exitButton.setVisible(true);
+            exitButton.setManaged(true);
+        }
         // Hiển thị pop-up thông báo người thắng
         final String finalWinnerName = winnerName; // Cần biến final để dùng trong lambda
         // Chạy trên luồng UI của JavaFX

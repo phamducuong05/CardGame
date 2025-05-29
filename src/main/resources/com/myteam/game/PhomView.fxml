@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
@@ -12,7 +11,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="1430.0" styleClass="game-background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.PhomGameViewController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="1430.0" styleClass="game-background" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.myteam.game.viewcontroller.PhomGameViewController">
    <top>
       <HBox alignment="TOP_CENTER" prefHeight="200.0" spacing="5.0" BorderPane.alignment="TOP_CENTER">
          <children>
@@ -22,11 +21,10 @@
                <children>
                   <StackPane prefHeight="100.0" prefWidth="100.0">
                      <children>
-                        <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
-                        <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
+                        <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" styleClass="circle3" />
                      </children>
                   </StackPane>
-                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" styleClass="card-count-label-gray-bg" text="Label">
+                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" styleClass="card-count-label-gray-bg" text="Bot 2">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -56,11 +54,10 @@
                <children>
                   <StackPane prefHeight="100.0" prefWidth="100.0">
                      <children>
-                        <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
-                        <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
+                        <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" styleClass="circle1" />
                      </children>
                   </StackPane>
-                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="85.0" styleClass="card-count-label-gray-bg" text="Label">
+                  <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="85.0" styleClass="card-count-label-gray-bg" text="Player 1">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -98,11 +95,10 @@
                      <children>
                         <StackPane prefHeight="100.0" prefWidth="100.0">
                            <children>
-                              <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
-                              <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
+                              <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" styleClass="circle4" />
                            </children>
                         </StackPane>
-                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" styleClass="card-count-label-gray-bg" text="Label">
+                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="90.0" styleClass="card-count-label-gray-bg" text="Bot 3">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -152,11 +148,10 @@
                      <children>
                         <StackPane prefHeight="100.0" prefWidth="100.0">
                            <children>
-                              <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" />
-                              <ImageView fitHeight="74.0" fitWidth="74.0" pickOnBounds="true" preserveRatio="true" />
+                              <Circle fill="DODGERBLUE" radius="38.0" stroke="BLACK" strokeType="INSIDE" styleClass="circle2" />
                            </children>
                         </StackPane>
-                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="68.0" styleClass="card-count-label-gray-bg" text="Label">
+                        <Label alignment="TOP_CENTER" contentDisplay="TOP" prefHeight="23.0" prefWidth="68.0" styleClass="card-count-label-gray-bg" text="Bot 1">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -191,22 +186,22 @@
          <bottom>
             <HBox alignment="CENTER" prefHeight="32.0" prefWidth="1010.0" spacing="20.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="eatButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleEatButton" text="Eat">
+                  <Button fx:id="eatButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleEatButton" styleClass="game-button" text="Eat">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="playButton" layoutX="740.0" layoutY="10.0" mnemonicParsing="false" onAction="#handlePlayButton" text="Play">
+                  <Button fx:id="playButton" layoutX="740.0" layoutY="10.0" mnemonicParsing="false" onAction="#handlePlayButton" styleClass="game-button" text="Play">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="drawButton" layoutX="110.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleDrawButton" text="Draw">
+                  <Button fx:id="drawButton" layoutX="110.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleDrawButton" styleClass="game-button" text="Draw">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" layoutX="580.0" layoutY="13.0" mnemonicParsing="false" onAction="#handleExitButton" text="Exit">
+                  <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" layoutX="580.0" layoutY="13.0" mnemonicParsing="false" onAction="#handleExitButton" styleClass="game-button" text="Exit">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -223,7 +218,7 @@
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <Button fx:id="dealButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleDealButton" text="Deal">
+                  <Button fx:id="dealButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleDealButton" styleClass="game-button" text="Deal">
                      <font>
                         <Font size="14.0" />
                      </font>

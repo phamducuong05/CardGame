@@ -1,5 +1,6 @@
 package com.myteam.game.controller;
 
+import com.myteam.game.viewcontroller.PhomViewInterface;
 import com.myteam.game.model.core.card.StandardCard;
 import com.myteam.game.model.game.PhomGameLogic;
 import com.myteam.game.model.phom.gamestate.PhomGameState;
@@ -9,22 +10,17 @@ import com.myteam.game.model.phom.action.PhomPlayerAction;
 
 import javafx.animation.PauseTransition;
 
-import com.myteam.game.PhomGameViewController;
-
 import javafx.util.Duration;
 
-import java.util.List;
-
-
 public class PhomLogicController extends LogicController<StandardCard, PhomPlayer, PhomGameLogic> {
-    private PhomGameViewController viewController;
+    private PhomViewInterface viewController;
 
     public PhomLogicController(PhomGameLogic gameLogic) {
         super(gameLogic);
         this.isGameRunning = false;
     }
 
-    public void setViewController(PhomGameViewController viewController) {
+    public void setViewController(PhomViewInterface viewController) {
         this.viewController = viewController;
     }
 
@@ -105,7 +101,7 @@ public class PhomLogicController extends LogicController<StandardCard, PhomPlaye
                 }
                 for (PhomPlayer player : gameLogic.getCurrentGameState().getPlayers()) {
                     int score = 0;
-                    for(StandardCard card : player.getHand()) {
+                    for (StandardCard card : player.getHand()) {
                         score += card.getRank().getValue();
                     }
                     System.out.println(player.getName() + "score: " + score);
@@ -268,4 +264,11 @@ public class PhomLogicController extends LogicController<StandardCard, PhomPlaye
             throw new RuntimeException("Error in playerRequestsDiscardSingleCard: " + e.getMessage(), e);
         }
     }
+
+    public void markGameAsStopped() {
+        this.isGameRunning = false;
+        System.out.println("TienLenLogicController: Game logic marked as stopped by exiting.");
+        // Không cần làm gì thêm ở đây nếu chấp nhận rủi ro PauseTransition
+    }
+
 }

@@ -1,7 +1,6 @@
 package com.myteam.game.viewcontroller;
 
 import com.myteam.game.App;
-import com.myteam.game.PhomGameViewController;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,6 +40,7 @@ class MenuSelections {
     String opponentMode;
     int numberOfBots;
     int totalPlayers;
+    String UIMode;
 
     @Override
     public String toString() {
@@ -72,6 +72,9 @@ public class GameMenuController implements Initializable {
     private VBox playerModeButtonGroup;
     @FXML
     private VBox numBotsButtonGroup;
+
+    @FXML
+    private VBox uiButtonGroup;
     // (Không cần VBox riêng cho finalStartGameButton nếu nó đơn lẻ,
     // nhưng nếu muốn nhất quán, có thể tạo VBox cho nó)
 
@@ -92,8 +95,15 @@ public class GameMenuController implements Initializable {
     private Button OneVsTwoButton;
     @FXML
     private Button OneVsThreeButton;
+
     @FXML
     private Button BackButton;
+
+    @FXML
+    private Button graphicUIButton; // Nút Start Game trong
+
+    @FXML
+    private Button basicUIButton; // Nút Start Game cuối cùng (nếu có)
 
     // @FXML private Button exitAppButton; // Nếu bạn có nút Exit riêng trong FXML
     // này
@@ -193,6 +203,22 @@ public class GameMenuController implements Initializable {
         // e.printStackTrace();
         // }
         // }
+        showScreen(uiButtonGroup);
+    }
+
+    @FXML
+    void handleGraphicUIButtonAction(ActionEvent event) {
+        // Xử lý sự kiện khi người dùng chọn giao diện đồ họa
+        currentSelections.UIMode = "Graphic";
+        historyStack.push(uiButtonGroup);
+        showScreen(numBotsButtonGroup);
+    }
+
+    @FXML
+    void handleBasicUIButtonAction(ActionEvent event) {
+        // Xử lý sự kiện khi người dùng chọn giao diện cơ bản
+        currentSelections.UIMode = "Basic";
+        historyStack.push(uiButtonGroup);
         showScreen(numBotsButtonGroup);
     }
 
@@ -216,28 +242,37 @@ public class GameMenuController implements Initializable {
             }
         }
 
+        historyStack.push(numBotsButtonGroup);
+        // Kiểm tra game type và khởi tạo game tương ứng
         if (currentSelections.gameType.equals("TienLen")) {
             try {
-                if (currentSelections.opponentMode.equals("VsHuman")) {
+                if (currentSelections.opponentMode.equals("VsBot")) {
+                    if (currentSelections.UIMode.equals("Basic")) {
+                        initalizeTienLenBasic();
+                    } else {
+                        initalizeTienLenBot();
+                    }
+                } else {
                     initalizeTienLenHuman();
-                } else if (currentSelections.opponentMode.equals("VsBot")) {
-                    initalizeTienLenBot();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (currentSelections.gameType.equals("Phom")) {
             try {
-                if (currentSelections.opponentMode.equals("VsHuman")) {
+                if (currentSelections.opponentMode.equals("VsBot")) {
+                    if (currentSelections.UIMode.equals("Basic")) {
+                        initializePhomBasic();
+                    } else {
+                        initalizePhomBot();
+                    }
+                } else {
                     initalizePhomHuman();
-                } else if (currentSelections.opponentMode.equals("VsBot")) {
-                    initalizePhomBot();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     @FXML
@@ -246,6 +281,47 @@ public class GameMenuController implements Initializable {
             Node previousScreen = historyStack.pop();
             showScreen(previousScreen);
         }
+    }
+
+    void initalizeTienLenBasic() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("TienLenBasicView.fxml")); // Đảm bảo đường dẫn
+        // đúng
+        Parent root = fxmlLoader.load();
+        TienLenBasicViewController uiController = fxmlLoader.getController(); // Lấy instance của TienLenViewController
+        uiController.setMainPlayerIndex(0);
+        // 2. Tạo các thành phần Logic Game
+        // Tạo người chơi (ví dụ)
+        List<TienLenPlayer> players = new ArrayList<>();
+        players.add(new TienLenHumanPlayer("Player 1 (You)")); // Người chơi chính
+        for (int i = 0; i < currentSelections.numberOfBots; i++) {
+            players.add(new TienLenBotPlayer("Bot " + (i + 1)));
+        }
+
+        StandardCardDeck<TienLenPlayer> deck = new StandardCardDeck<>(); // Bộ bài
+        // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)
+        int initialCardsPerPlayer = 52 / (currentSelections.numberOfBots + 1); // Chia đều số lá bài cho người chơi và
+                                                                               // bot
+        TienLenMienBacGameLogic gameLogic = new TienLenMienBacGameLogic(deck, players, initialCardsPerPlayer);
+
+        // 3. Tạo Logic Controller
+        TienLenLogicController logicController = new TienLenLogicController(gameLogic);
+
+        // 4. Kết nối UI Controller và Logic Controller (RẤT QUAN TRỌNG)
+        // 4.1. UI Controller cần biết về Logic Controller
+        uiController.setLogicController(logicController);
+
+        // 4.2. Logic Controller cần biết về UI Controller (để gọi updateView, etc.)
+        // Điều này yêu cầu TienLenViewController phải implement interface
+        // TienLenGameViewController
+        // Giả sử TienLenViewController đã `implements
+        // com.myteam.game.view.TienLenGameViewController`
+        logicController.setViewController(uiController); // DÒNG NÀY QUAN TRỌNG
+
+        // 5. Thiết lập Scene và hiển thị Stage
+        scene = new Scene(root, 1430, 770); // Kích thước cửa sổ
+        stage.setTitle("TienLen Game");
+        stage.setScene(scene);
+        stage.show();
     }
 
     void initalizeTienLenHuman() throws IOException {
@@ -257,14 +333,14 @@ public class GameMenuController implements Initializable {
         // 2. Tạo các thành phần Logic Game
         // Tạo người chơi (ví dụ)
         List<TienLenPlayer> players = new ArrayList<>();
-        players.add(new TienLenHumanPlayer("Player 1 (You)")); // Người chơi chính
-        players.add(new TienLenHumanPlayer("Bot 1"));
-        players.add(new TienLenHumanPlayer("Bot 2"));
-        players.add(new TienLenHumanPlayer("Bot 3"));
+        for (int i = 0; i < (currentSelections.numberOfBots + 1); i++) {
+            players.add(new TienLenHumanPlayer("Player" + (i + 1))); // Người chơi chính
+        }
 
         StandardCardDeck<TienLenPlayer> deck = new StandardCardDeck<>(); // Bộ bài
         // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)
-        int initialCardsPerPlayer = 13;
+        int initialCardsPerPlayer = 52 / (currentSelections.numberOfBots + 1); // Chia đều số lá bài cho người chơi và
+                                                                               // bot
         TienLenMienBacGameLogic gameLogic = new TienLenMienBacGameLogic(deck, players, initialCardsPerPlayer);
 
         // 3. Tạo Logic Controller
@@ -298,13 +374,14 @@ public class GameMenuController implements Initializable {
         // Tạo người chơi (ví dụ)
         List<TienLenPlayer> players = new ArrayList<>();
         players.add(new TienLenHumanPlayer("Player 1 (You)")); // Người chơi chính
-        players.add(new TienLenBotPlayer("Bot 1"));
-        players.add(new TienLenBotPlayer("Bot 2"));
-        players.add(new TienLenBotPlayer("Bot 3"));
+        for (int i = 0; i < currentSelections.numberOfBots; i++) {
+            players.add(new TienLenBotPlayer("Bot " + (i + 1)));
+        }
 
         StandardCardDeck<TienLenPlayer> deck = new StandardCardDeck<>(); // Bộ bài
         // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)
-        int initialCardsPerPlayer = 13;
+        int initialCardsPerPlayer = 52 / (currentSelections.numberOfBots + 1); // Chia đều số lá bài cho người chơi và
+                                                                               // bot
         TienLenMienBacGameLogic gameLogic = new TienLenMienBacGameLogic(deck, players, initialCardsPerPlayer);
 
         // 3. Tạo Logic Controller
@@ -324,6 +401,45 @@ public class GameMenuController implements Initializable {
         // 5. Thiết lập Scene và hiển thị Stage
         scene = new Scene(root, 1430, 770); // Kích thước cửa sổ
         stage.setTitle("TienLen Game");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    void initializePhomBasic() throws IOException {
+        // 1. Load FXML và lấy UI Controller
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("PhomBasicView.fxml")); // Đảm bảo đường dẫn đúng
+        Parent root = fxmlLoader.load();
+        PhomBasicViewController uiController = fxmlLoader.getController(); // Lấy instance của PhomViewController
+        uiController.setMainPlayerIndex(0);
+        List<PhomPlayer> players = new ArrayList<>();
+        players.add(new PhomHumanPlayer("Player 1 (You)")); // Người chơi chính
+        for (int i = 0; i < currentSelections.numberOfBots; i++) {
+            players.add(new PhomBotPlayer("Bot " + (i + 1)));
+        }
+
+        StandardCardDeck<PhomPlayer> deck = new StandardCardDeck<>(); // Bộ bài
+        // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)
+        int initialCardsPerPlayer = 9;
+        PhomGameLogic gameLogic = new PhomGameLogic(deck, players, initialCardsPerPlayer);
+
+        // 3. Tạo Logic Controller
+        PhomLogicController logicController = new PhomLogicController(gameLogic);
+
+        // 4. Kết nối UI Controller và Logic Controller (RẤT QUAN TRỌNG)
+        // 4.1. UI Controller cần biết về Logic Controller
+        uiController.setLogicController(logicController);
+
+        // 4.2. Logic Controller cần biết về UI Controller (để gọi updateView, etc.)
+        // Điều này yêu cầu PhomViewController phải implement interface
+        // PhomGameViewController
+        // Giả sử PhomViewController đã `implements
+        // com.myteam.game.view.PhomGameViewController`
+        logicController.setViewController(uiController); // DÒNG NÀY QUAN TRỌNG
+        // Đặt stage cho Logic Controller
+        // 5. Thiết lập Scene và hiển thị Stage
+
+        scene = new Scene(root, 1430, 770); // Kích thước cửa sổ
+        stage.setTitle("Phom Game");
         stage.setScene(scene);
         stage.show();
     }
@@ -377,14 +493,13 @@ public class GameMenuController implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("PhomHumanView.fxml")); // Đảm bảo đường dẫn đúng
         Parent root = fxmlLoader.load();
         PhomGameViewController uiController = fxmlLoader.getController(); // Lấy instance của PhomViewController
-
+        uiController.setNumberOfPlayers(currentSelections.numberOfBots + 1);
         // 2. Tạo các thành phần Logic Game
         // Tạo người chơi (ví dụ)
         List<PhomPlayer> players = new ArrayList<>();
-        players.add(new PhomHumanPlayer("Player 1 (You)")); // Người chơi chính
-        players.add(new PhomHumanPlayer("Player 2"));
-        players.add(new PhomHumanPlayer("Player 3"));
-        players.add(new PhomHumanPlayer("Player 4"));
+        for (int i = 0; i < (currentSelections.numberOfBots + 1); i++) {
+            players.add(new PhomHumanPlayer("Player" + (i + 1))); // Người chơi chính
+        }
 
         StandardCardDeck<PhomPlayer> deck = new StandardCardDeck<>(); // Bộ bài
         // Số lá bài ban đầu cho mỗi người (trừ người đầu tiên được thêm 1)

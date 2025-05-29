@@ -14,9 +14,9 @@ import java.util.Comparator;
 import java.util.List;
 
 public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
+    // ... các thuộc tính giữ nguyên
     private List<StandardCard> cardsOnTable;
     private List<TienLenPlayer> playerRankings;
-    private int skipCount = 0;
     private boolean isFirstTurn = true;
 
     public TienLenMienBacGameLogic() {
@@ -41,10 +41,14 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
     }
 
     public void clearCardsOnTable() {
-        if (this.cardsOnTable != null) {
-            this.cardsOnTable.clear();
+        try {
+            if (this.cardsOnTable != null) {
+                this.cardsOnTable.clear();
+            }
+            System.out.println("Logic: Cards on table cleared.");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to clear cards on table", e);
         }
-        System.out.println("Logic: Cards on table cleared.");
     }
 
     public void setCurrentPlayer(TienLenPlayer player) {
@@ -53,77 +57,97 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
 
     @Override
     public TienLenPlayer getFirstPlayer(List<TienLenPlayer> players) {
-        for (TienLenPlayer player : players) {
-            for (StandardCard card : player.getHand()) {
-                if (card.getRank() == Rank.THREE && card.getSuit() == Suit.SPADES) {
-                    return player;
+        try {
+            for (TienLenPlayer player : players) {
+                for (StandardCard card : player.getHand()) {
+                    if (card.getRank() == Rank.THREE && card.getSuit() == Suit.SPADES) {
+                        return player;
+                    }
                 }
             }
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to determine first player", e);
         }
-        return null;
     }
 
     @Override
     public boolean isValidMove(List<StandardCard> selectedCards) {
-        if ((cardsOnTable == null || cardsOnTable.isEmpty()) && isFirstTurn) {
-            // If no cards on the table, any valid combination can be played
-            return selectedCards.get(0).getRank() == Rank.THREE && selectedCards.get(0).getSuit() == Suit.SPADES;
+        try {
+            if ((cardsOnTable == null || cardsOnTable.isEmpty()) && isFirstTurn) {
+                return selectedCards.get(0).getRank() == Rank.THREE && selectedCards.get(0).getSuit() == Suit.SPADES;
+            }
+            if (cardsOnTable == null || cardsOnTable.isEmpty()) {
+                return isValidCombination(selectedCards);
+            }
+            if (!isValidCombination(selectedCards))
+                return false;
+            return isCounter(cardsOnTable, selectedCards);
+        } catch (Exception e) {
+            throw new RuntimeException("Error validating move", e);
         }
-        if (cardsOnTable == null || cardsOnTable.isEmpty()) {
-            // If no cards on the table, any valid combination can be played
-            return isValidCombination(selectedCards);
-        }
-        if (!isValidCombination(selectedCards))
-            return false;
-        return isCounter(cardsOnTable, selectedCards);
     }
 
     @Override
     public boolean endGame() {
-        int playersWithCards = 0;
-        for (TienLenPlayer player : players) {
-            if (!player.getHand().isEmpty()) {
-                playersWithCards++;
+        try {
+            int playersWithCards = 0;
+            for (TienLenPlayer player : players) {
+                if (!player.getHand().isEmpty()) {
+                    playersWithCards++;
+                }
             }
+            return playersWithCards <= players.size() - 1;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to check end game condition", e);
         }
-        return playersWithCards <= 3; // Game kết thúc khi chỉ còn 1 người (hoặc 0 người) có bài
     }
 
     @Override
     public void nextTurn() {
-        currentPlayer = getCurrentPlayer();
-        currentPlayer = getPlayers().get((getPlayers().indexOf(currentPlayer) + 1) % getPlayers().size());
+        try {
+            currentPlayer = getCurrentPlayer();
+            currentPlayer = getPlayers().get((getPlayers().indexOf(currentPlayer) + 1) % getPlayers().size());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to switch to next turn", e);
+        }
     }
 
     public void playCards(List<StandardCard> selectedCards) {
-        if (isValidMove(selectedCards)) {
-            currentPlayer.getHand().removeAll(selectedCards);
-            this.cardsOnTable = new ArrayList<>(selectedCards);
-            TienLenGameState gameState = getCurrentGameState();
-            System.out.println("LogicCtrl: Sau khi gameLogic.playCards. Bài trên bàn hiện tại (model): "
-                    + gameState.getCardsOnTable());
-        } else {
-            System.out.println("Invalid card combination!");
+        try {
+            if (isValidMove(selectedCards)) {
+                currentPlayer.getHand().removeAll(selectedCards);
+                this.cardsOnTable = new ArrayList<>(selectedCards);
+                TienLenGameState gameState = getCurrentGameState();
+                System.out.println("LogicCtrl: Sau khi gameLogic.playCards. Bài trên bàn hiện tại (model): "
+                        + gameState.getCardsOnTable());
+            } else {
+                System.out.println("Invalid card combination!");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to play cards", e);
         }
-
     }
 
     private boolean isValidCombination(List<StandardCard> selectedCards) {
-        if (selectedCards == null || selectedCards.isEmpty()) {
+        try {
+            if (selectedCards == null || selectedCards.isEmpty()) {
+                return false;
+            }
+            if (selectedCards.size() == 1)
+                return true;
+            if (isPair(selectedCards))
+                return true;
+            if (isThreeOfKind(selectedCards))
+                return true;
+            if (isFourOfKind(selectedCards))
+                return true;
+            if (isSequence(selectedCards))
+                return true;
             return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to validate combination", e);
         }
-        if (selectedCards.size() == 1) {
-            return true; // Tối đa 4 lá bài
-        }
-        if (isPair(selectedCards))
-            return true;
-        if (isThreeOfKind(selectedCards))
-            return true;
-        if (isFourOfKind(selectedCards))
-            return true;
-        if (isSequence(selectedCards))
-            return true;
-        return false;
     }
 
     public boolean isSameSuit(StandardCard c1, StandardCard c2) {
@@ -131,123 +155,138 @@ public class TienLenMienBacGameLogic extends Game<StandardCard, TienLenPlayer> {
     }
 
     public boolean isSameColor(StandardCard c1, StandardCard c2) {
-        boolean allRed = (c1.getSuit() == Suit.HEARTS && c2.getSuit() == Suit.DIAMONDS)
-                || (c1.getSuit() == Suit.DIAMONDS && c2.getSuit() == Suit.HEARTS);
-        boolean allBlack = (c1.getSuit() == Suit.CLUBS && c2.getSuit() == Suit.SPADES)
-                || (c1.getSuit() == Suit.SPADES && c2.getSuit() == Suit.CLUBS);
+        boolean allRed = (c1.getSuit() == Suit.HEARTS && c2.getSuit() == Suit.DIAMONDS) ||
+                (c1.getSuit() == Suit.DIAMONDS && c2.getSuit() == Suit.HEARTS);
+        boolean allBlack = (c1.getSuit() == Suit.CLUBS && c2.getSuit() == Suit.SPADES) ||
+                (c1.getSuit() == Suit.SPADES && c2.getSuit() == Suit.CLUBS);
         return allRed || allBlack;
     }
 
     public boolean isPair(List<StandardCard> selectedCards) {
-        return (selectedCards.size() == 2 && selectedCards.get(0).getRank() == selectedCards.get(1).getRank())
-                && isSameColor(selectedCards.get(0), selectedCards.get(1));
+        return (selectedCards.size() == 2 && selectedCards.get(0).getRank() == selectedCards.get(1).getRank()) &&
+                isSameColor(selectedCards.get(0), selectedCards.get(1));
     }
 
     public boolean isThreeOfKind(List<StandardCard> selectedCards) {
-        return selectedCards.size() == 3
-                && selectedCards.get(0).getRank() == selectedCards.get(1).getRank()
-                && selectedCards.get(1).getRank() == selectedCards.get(2).getRank();
+        return selectedCards.size() == 3 &&
+                selectedCards.get(0).getRank() == selectedCards.get(1).getRank() &&
+                selectedCards.get(1).getRank() == selectedCards.get(2).getRank();
     }
 
     public boolean isFourOfKind(List<StandardCard> selectedCards) {
-        return selectedCards.size() == 4
-                && selectedCards.get(0).getRank() == selectedCards.get(1).getRank()
-                && selectedCards.get(1).getRank() == selectedCards.get(2).getRank()
-                && selectedCards.get(2).getRank() == selectedCards.get(3).getRank();
+        return selectedCards.size() == 4 &&
+                selectedCards.get(0).getRank() == selectedCards.get(1).getRank() &&
+                selectedCards.get(1).getRank() == selectedCards.get(2).getRank() &&
+                selectedCards.get(2).getRank() == selectedCards.get(3).getRank();
     }
 
     public boolean isSequence(List<StandardCard> selectedCards) {
-        if (selectedCards.size() < 3)
-            return false;
-        selectedCards.sort(Comparator.comparing(StandardCard::getRank).thenComparing(StandardCard::getSuit));
-        for (int i = 1; i < selectedCards.size(); i++) {
-            if ((selectedCards.get(i).getRank().getValue() != selectedCards.get(i - 1).getRank().getValue() + 1)
-                    || (selectedCards.get(i).getSuit() != selectedCards.get(i - 1).getSuit()))
+        try {
+            if (selectedCards.size() < 3)
                 return false;
+            for (StandardCard card : selectedCards) {
+                if (card.getRank() == Rank.TWO)
+                    return false;
+            }
+            selectedCards.sort(Comparator.comparing(StandardCard::getRank).thenComparing(StandardCard::getSuit));
+            for (int i = 1; i < selectedCards.size(); i++) {
+                if ((selectedCards.get(i).getRank().ordinal() != selectedCards.get(i - 1).getRank().ordinal() + 1) ||
+                        (selectedCards.get(i).getSuit() != selectedCards.get(i - 1).getSuit()))
+                    return false;
+            }
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to check sequence", e);
         }
-        return true;
     }
 
     public boolean isCounter(List<StandardCard> UcardsOnTable, List<StandardCard> UselectedCards) {
-        List<StandardCard> cardsOnTable = new ArrayList<>(UcardsOnTable);
-        List<StandardCard> selectedCards = new ArrayList<>(UselectedCards);
+        try {
+            List<StandardCard> cardsOnTable = new ArrayList<>(UcardsOnTable);
+            List<StandardCard> selectedCards = new ArrayList<>(UselectedCards);
 
-        boolean tableIsPair = isPair(cardsOnTable);
-        boolean selectedIsPair = isPair(selectedCards);
-        boolean tableIsThree = isThreeOfKind(cardsOnTable);
-        boolean selectedIsThree = isThreeOfKind(selectedCards);
-        boolean tableIsFour = isFourOfKind(cardsOnTable);
-        boolean selectedIsFour = isFourOfKind(selectedCards);
-        boolean tableIsSequence = isSequence(cardsOnTable);
-        boolean selectedIsSequence = isSequence(selectedCards);
+            boolean tableIsPair = isPair(cardsOnTable);
+            boolean selectedIsPair = isPair(selectedCards);
+            boolean tableIsThree = isThreeOfKind(cardsOnTable);
+            boolean selectedIsThree = isThreeOfKind(selectedCards);
+            boolean tableIsFour = isFourOfKind(cardsOnTable);
+            boolean selectedIsFour = isFourOfKind(selectedCards);
+            boolean tableIsSequence = isSequence(cardsOnTable);
+            boolean selectedIsSequence = isSequence(selectedCards);
 
-        cardsOnTable.sort(new StandardCardComparator()); // Hoặc comparator của bạn
-        selectedCards.sort(new StandardCardComparator());
-        // special counter only for cards with rank 2
-        if (cardsOnTable.size() == 1 && cardsOnTable.getFirst().getRank() == Rank.TWO) {
-            if (selectedCards.size() == 1 && selectedCards.getFirst().getRank() == Rank.TWO
-                    && selectedCards.getFirst().getSuit().compareTo(cardsOnTable.getFirst().getSuit()) > 0) {
-                return true;
+            cardsOnTable.sort(new StandardCardComparator());
+            selectedCards.sort(new StandardCardComparator());
+
+            if (cardsOnTable.size() == 1 && cardsOnTable.getFirst().getRank() == Rank.TWO) {
+                if (selectedCards.size() == 1 && selectedCards.getFirst().getRank() == Rank.TWO &&
+                        selectedCards.getFirst().getSuit().compareTo(cardsOnTable.getFirst().getSuit()) > 0) {
+                    return true;
+                }
+                return selectedIsFour;
             }
 
-            return selectedIsFour;
-        }
+            if (cardsOnTable.size() == 1 && cardsOnTable.getFirst().getRank() != Rank.TWO) {
+                if (selectedCards.size() != 1)
+                    return false;
+                int cardOnTableRank = cardsOnTable.getFirst().getRank().ordinal();
+                int cardSelectedRank = selectedCards.getFirst().getRank().ordinal();
+                int cardOnTableSuit = cardsOnTable.getFirst().getSuit().ordinal();
+                int cardSelectedSuit = selectedCards.getFirst().getSuit().ordinal();
+                if (cardOnTableRank < cardSelectedRank && cardOnTableSuit == cardSelectedSuit) {
+                    return true;
+                } else
+                    return false;
+            }
 
-        if (cardsOnTable.size() == 1 && cardsOnTable.getFirst().getRank() != Rank.TWO) {
-            if (selectedCards.size() != 1)
+            if (tableIsPair && cardsOnTable.getFirst().getRank() == Rank.TWO) {
+                return selectedIsPair &&
+                        selectedCards.getLast().getSuit().compareTo(cardsOnTable.getLast().getSuit()) > 0;
+            }
+
+            if (cardsOnTable.size() != selectedCards.size()) {
                 return false;
-            int cardOnTableRank = cardsOnTable.getFirst().getRank().ordinal();
-            int cardSelectedRank = selectedCards.getFirst().getRank().ordinal();
-            int cardOnTableSuit = cardsOnTable.getFirst().getSuit().ordinal();
-            int cardSelectedSuit = selectedCards.getFirst().getSuit().ordinal();
-            if (cardOnTableRank < cardSelectedRank && cardOnTableSuit == cardSelectedSuit) {
+            }
+
+            if ((tableIsPair && !selectedIsPair) ||
+                    (tableIsThree && !selectedIsThree) ||
+                    (tableIsFour && !selectedIsFour) ||
+                    (tableIsSequence && !selectedIsSequence)) {
+                return false;
+            }
+
+            for (int i = 0; i < cardsOnTable.size(); i++) {
+                if (!isSameSuit(cardsOnTable.get(i), selectedCards.get(i)))
+                    return false;
+            }
+
+            StandardCard highestTableCard = cardsOnTable.getLast();
+            StandardCard highestSelectedCard = selectedCards.getLast();
+
+            int rankComparison = highestSelectedCard.getRank().compareTo(highestTableCard.getRank());
+            if (rankComparison > 0) {
                 return true;
-            } else
-                return false;
-        }
-
-        if (tableIsPair && cardsOnTable.getFirst().getRank() == Rank.TWO) {
-            return selectedIsPair && selectedCards.getLast().getSuit().compareTo(cardsOnTable.getLast().getSuit()) > 0;
-        }
-
-        if (cardsOnTable.size() != selectedCards.size()) {
+            } else if (rankComparison == 0) {
+                return highestSelectedCard.getSuit().compareTo(highestTableCard.getSuit()) > 0;
+            }
             return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to compare card sets", e);
         }
-
-        if ((tableIsPair && !selectedIsPair) ||
-                (tableIsThree && !selectedIsThree) ||
-                (tableIsFour && !selectedIsFour) ||
-                (tableIsSequence && !selectedIsSequence)) {
-            return false;
-        }
-
-        for (int i = 0; i < cardsOnTable.size(); i++) {
-            if (!isSameSuit(cardsOnTable.get(i), selectedCards.get(i)))
-                return false;
-        }
-
-        StandardCard highestTableCard = cardsOnTable.getLast();
-        StandardCard highestSelectedCard = selectedCards.getLast();
-
-        int rankComparison = highestSelectedCard.getRank().compareTo(highestTableCard.getRank());
-        if (rankComparison > 0) {
-            return true;
-        } else if (rankComparison == 0) {
-            return highestSelectedCard.getSuit().compareTo(highestTableCard.getSuit()) > 0;
-        }
-        return false;
     }
 
     public TienLenGameState getCurrentGameState() {
-        List<TienLenPlayer> currentPlayers = Collections.unmodifiableList(new ArrayList<>(this.players));
-        TienLenPlayer activePlayer = this.currentPlayer;
-        List<StandardCard> cardsOnTable = new ArrayList<>(this.cardsOnTable);
-        return new TienLenGameState(
-                currentPlayers,
-                activePlayer,
-                cardsOnTable,
-                endGame(),
-                playerRankings);
+        try {
+            List<TienLenPlayer> currentPlayers = Collections.unmodifiableList(new ArrayList<>(this.players));
+            TienLenPlayer activePlayer = this.currentPlayer;
+            List<StandardCard> cardsOnTable = new ArrayList<>(this.cardsOnTable);
+            return new TienLenGameState(
+                    currentPlayers,
+                    activePlayer,
+                    cardsOnTable,
+                    endGame(),
+                    playerRankings);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get current game state", e);
+        }
     }
-
 }
